@@ -9,6 +9,98 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String       @id @default(uuid())
+  fullName       String
+  username       String       @unique
+  profilePicture String
+  email          String       @unique
+  password       String
+  status         UserStatus
+  role           UserRole
+  preferences    Json
+  forms          Form[]
+  submissions    Submission[]
+  feedbacks      Feedback[]
+  reports        Report[]
+  createdAt      DateTime
+  lastLogin      DateTime
+}
+
+model Form {
+  id              String       @id @default(uuid())
+  userID          String
+  title           String
+  description     String
+  questions       Json
+  manySubmission  Boolean
+  editable        Boolean
+  status          FormStatus
+  viewCount       Int
+  submissionCount Int
+  submissions     Submission[]
+  reports         Report[]
+  user            User         @relation(fields: [userID], references: [id])
+  createdAt       DateTime
+  updatedAt       DateTime
+  deadline        DateTime
+}
+
+model Submission {
+  id        String   @id @default(uuid())
+  formID    String
+  userID    String?
+  answers   Json
+  form      Form     @relation(fields: [formID], references: [id])
+  user      User?    @relation(fields: [userID], references: [id])
+  createdAt DateTime
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userID    String
+  category  String
+  comment   String
+  user      User     @relation(fields: [userID], references: [id])
+  createdAt DateTime
+  // reviewer, status
+}
+
+model Report {
+  id       String   @id @default(uuid())
+  formID   String
+  userID   String?
+  category String
+  comment  String
+  form     Form     @relation(fields: [formID], references: [id])
+  user     User?    @relation(fields: [userID], references: [id])
+  createAt DateTime
+  // reviewer, status
+}
+
+enum UserStatus {
+  UNVERIFIED
+  OPEN
+  CLOSED
+  DEACTIVATED
+  ARCHIVED
+  DELETED
+}
+
+enum UserRole {
+  ADMIN
+  MODERATOR
+  USER
+}
+
+enum FormStatus {
+  DRAFT
+  ARCHIVED
+  OPENED
+  CLOSED
 }

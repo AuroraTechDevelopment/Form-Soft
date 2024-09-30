@@ -16,20 +16,20 @@ datasource db {
 
 model User {
   id             String       @id @default(uuid())
-  fullName       String
+  fullName       String // Random names by default: faker
   username       String       @unique
-  profilePicture String
-  email          String       @unique
+  profilePicture String?
+  email          String       @unique // First part of email is used as username
   password       String
-  status         UserStatus
-  role           UserRole
-  preferences    Json
+  status         UserStatus   @default(UNVERIFIED)
+  role           UserRole     @default(USER)
+  preferences    Json?
   forms          Form[]
   submissions    Submission[]
   feedbacks      Feedback[]
   reports        Report[]
-  createdAt      DateTime
-  lastLogin      DateTime
+  createdAt      DateTime     @default(now())
+  lastLogin      DateTime     @default(now())
 }
 
 model Form {
@@ -46,8 +46,8 @@ model Form {
   submissions     Submission[]
   reports         Report[]
   user            User         @relation(fields: [userID], references: [id])
-  createdAt       DateTime
-  updatedAt       DateTime
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @default(now())
   deadline        DateTime
 }
 
@@ -58,7 +58,7 @@ model Submission {
   answers   Json
   form      Form     @relation(fields: [formID], references: [id])
   user      User?    @relation(fields: [userID], references: [id])
-  createdAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Feedback {
@@ -67,7 +67,7 @@ model Feedback {
   category  String
   comment   String
   user      User     @relation(fields: [userID], references: [id])
-  createdAt DateTime
+  createdAt DateTime @default(now())
   // reviewer, status
 }
 
@@ -79,12 +79,13 @@ model Report {
   comment  String
   form     Form     @relation(fields: [formID], references: [id])
   user     User?    @relation(fields: [userID], references: [id])
-  createAt DateTime
+  createAt DateTime @default(now())
   // reviewer, status
 }
 
 enum UserStatus {
-  UNVERIFIED
+  UNVERIFIED // Email verification
+  INCOMPLETE // Profile completion
   OPEN
   CLOSED
   DEACTIVATED

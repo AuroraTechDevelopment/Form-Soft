@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
             Number(process.env.SALT_ROUNDS!),
         )
 
-        const user = await prisma.user.create({
+        await prisma.user.create({
             data: {
                 email: email,
                 password: hashedPassword,

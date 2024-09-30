@@ -72,7 +72,7 @@ const SignUpForm = () => {
                 <FormField
                     control={form.control}
                     name='password'
-                    render={({ field, fieldState, formState }) => (
+                    render={({ field }) => (
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>

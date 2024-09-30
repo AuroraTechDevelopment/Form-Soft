@@ -1,4 +1,3 @@
-import { PropsWithChildren } from 'react'
 import { ThemeProvider } from './theme-provider'
 import SessionProviderWrapper from './session-provider'
 import { Session } from 'next-auth'
@@ -12,6 +11,7 @@ import { Session } from 'next-auth'
 
 export default function Providers({
     children,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     params: { session, ...params },
 }: Readonly<{
     children: React.ReactNode

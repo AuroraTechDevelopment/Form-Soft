@@ -3,6 +3,7 @@ import localFont from 'next/font/local'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import Providers from '@/components/providers/providers'
+import { Session } from 'next-auth'
 
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',
@@ -22,15 +23,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
     children,
+    params: { session, ...params },
 }: Readonly<{
     children: React.ReactNode
+    params: { session: Session }
 }>) {
     return (
         <html lang='en'>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <Providers>
+                <Providers params={{ session, ...params }}>
                     {children}
                     <Toaster />
                 </Providers>

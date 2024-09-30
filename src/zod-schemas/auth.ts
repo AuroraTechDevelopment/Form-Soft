@@ -7,19 +7,19 @@ const email = z
 const password = z
     .string()
     .min(1, 'Password is required')
-    .min(8, 'Password must have at leasy 8 characters')
-    .regex(/^(?=.*[a-z])$/, {
-        message: 'Password must have at least one uppercase letter',
-    })
-    .regex(/^(?=.*[A-Z])$/, {
+    .min(8, 'Password must have at least 8 characters')
+    .regex(/(?=.*[a-z])/, {
         message: 'Password must have at least one lowercase letter',
     })
-    .regex(/^(?=.*\d)$/, {
+    .regex(/(?=.*[A-Z])/, {
+        message: 'Password must have at least one uppercase letter',
+    })
+    .regex(/(?=.*\d)/, {
         message: 'Password must have at least one number',
     })
-    .regex(/^(?=.*[!@#$%^&*])$/, {
+    .regex(/(?=.*[!@#$%^&*.])/, {
         message:
-            'Password must have at least one special character, ex. !@#$%^&*',
+            'Password must have at least one special character, ex. !@#$%^&*.',
     })
 
 export const signInSchema = z.object({
@@ -28,10 +28,10 @@ export const signInSchema = z.object({
 })
 
 export const signUpSchema = z.object({
-    firstName: z.string().min(1, 'First name is required'),
-    lastName: z.string().min(1, 'Last name is required'),
-    username: z.string().min(1, 'Username is required'),
-    
+    // firstName: z.string().min(1, 'First name is required'),
+    // lastName: z.string().min(1, 'Last name is required'),
+    // username: z.string().min(1, 'Username is required'),
+
     email: email,
     password: password,
 })

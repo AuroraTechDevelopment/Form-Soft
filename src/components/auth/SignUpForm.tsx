@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -16,30 +15,30 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import axio from '@/lib/axios'
 import { signUpSchema, SignUpSchema } from '@/zod-schemas/auth'
-import { addToken } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
+import { redirect } from 'next/navigation'
 
 const SignUpForm = () => {
     const form = useForm<SignUpSchema>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
-            username: '',
             email: '',
             password: '',
         },
+        mode: 'all',
     })
 
     async function onSubmit(data: SignUpSchema) {
-        const response = await axio.post('/auth/signup', data)
-        if (response.ok === 200) {
-            addToken(response.data)
+        const response = await axio.post('/api/auth/signup', data)
+        if (response.status === 200) {
             toast({
                 title: 'Success!',
-                description: response.data + '. Redirecting to login page.',
+                description: response.data + ' Redirecting to login page.',
             })
-            setTimeout(() => {
-                window.location.href = '/login'
-            }, 1000)
+            // setTimeout(() => {
+            //     window.location.href = '/login'
+            // }, 1000)
+            redirect('/login')
         } else {
             toast({
                 title: 'Error',
@@ -54,26 +53,6 @@ const SignUpForm = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
                 <FormField
                     control={form.control}
-                    name='username'
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder='Username'
-                                    autoFocus
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
                     name='email'
                     render={({ field }) => (
                         <FormItem>
@@ -85,9 +64,7 @@ const SignUpForm = () => {
                                     {...field}
                                 />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
+                            <FormDescription>Enter your email.</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -95,7 +72,7 @@ const SignUpForm = () => {
                 <FormField
                     control={form.control}
                     name='password'
-                    render={({ field }) => (
+                    render={({ field, fieldState, formState }) => (
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
@@ -106,7 +83,7 @@ const SignUpForm = () => {
                                 />
                             </FormControl>
                             <FormDescription>
-                                Password must be at least 4 characters long.
+                                Enter your password.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

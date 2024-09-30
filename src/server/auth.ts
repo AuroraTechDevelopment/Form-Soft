@@ -9,7 +9,7 @@ import { prisma } from '@/server/prisma'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import { compare } from 'bcrypt'
-import { loginSchema } from '@/zod-schemas/auth'
+import { signInSchema } from '@/zod-schemas/auth'
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -59,41 +59,46 @@ export const authOptions: NextAuthOptions = {
                 password: { type: 'password' },
             },
             async authorize(credentials) {
-                // console.log('credentials', credentials)
-                const validCredentials = loginSchema.safeParse(credentials)
+                try {
+                    // console.log('credentials', credentials)
+                    const validCredentials = signInSchema.safeParse(credentials)
 
-                if (!validCredentials.success) {
-                    throw new Error(
-                        'Invalid credentials ' + validCredentials.error,
-                    )
-                }
+                    if (!validCredentials.success) {
+                        throw new Error(
+                            'Invalid credentials ' + validCredentials.error,
+                        )
+                    }
 
-                const { email, password } = validCredentials.data
+                    const { email, password } = validCredentials.data
 
-                const user = await prisma.user.findUnique({
-                    where: { email: email.toLowerCase() },
-                })
+                    const user = await prisma.user.findUnique({
+                        where: { email: email.toLowerCase() },
+                    })
 
-                if (!user) {
-                    throw new Error('Invalid Email')
-                }
+                    if (!user) {
+                        throw new Error('Invalid Email')
+                    }
 
-                const isValid = await compare(password, user.password)
-                if (!isValid) {
-                    throw new Error('Invalid password')
-                }
+                    const isValid = await compare(password, user.password)
+                    if (!isValid) {
+                        throw new Error('Invalid password')
+                    }
 
-                return {
-                    id: user.id,
-                    email: user.email,
-                    name: user.fullName,
-                    role: user.role,
+                    return {
+                        id: user.id,
+                        email: user.email,
+                        name: user.fullName,
+                        role: user.role,
+                    }
+                } catch (error) {
+                    console.log('error', error)
+                    return null
                 }
             },
         }),
     ],
     pages: {
-        signIn: '/login',
+        signIn: '/signin',
     },
     session: {
         strategy: 'jwt',
@@ -102,6 +107,10 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ account, profile }) {
             if (account?.provider === 'google') {
+                // Check if the email exists in the database (users model)
+
+                // If the email does not exist, create a new user
+
                 return (
                     profile?.email_verified &&
                     profile?.email?.endsWith('@gmail.com')

@@ -1,5 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { ThemeProvider } from './theme-provider'
+import SessionProviderWrapper from './session-provider'
+import { Session } from 'next-auth'
 
 /**
  * Providers wrapper for all of our context providers.
@@ -8,11 +10,19 @@ import { ThemeProvider } from './theme-provider'
  * @returns Providers
  */
 
-export default function Providers({ children }: PropsWithChildren) {
+export default function Providers({
+    children,
+    params: { session, ...params },
+}: Readonly<{
+    children: React.ReactNode
+    params: { session: Session }
+}>) {
     return (
         <ThemeProvider>
-            {/* Nest Providers here... */}
-            {children}
+            <SessionProviderWrapper session={session}>
+                {/* Nest Providers here... */}
+                {children}
+            </SessionProviderWrapper>
         </ThemeProvider>
     )
 }

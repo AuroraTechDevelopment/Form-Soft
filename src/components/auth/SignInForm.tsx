@@ -49,16 +49,13 @@ const SignInForm = () => {
         const res = await signIn('credentials', {
             ...validCredentials.data,
             redirect: false,
-            // callbackUrl: callbackURL,
         })
         if (res?.ok) {
             toast({
                 title: 'Success',
                 description: 'You have been logged in Successfully',
             })
-            // await waitFor(1000)
             router.push(callbackURL)
-            router.refresh()
         } else {
             console.log(res)
             toast({
@@ -119,7 +116,10 @@ const SignInForm = () => {
                         <Loader2 size={24} className='animate-spin' />
                     </Button>
                 ) : (
-                    <Button type='submit' disabled={!form.formState.isValid}>
+                    <Button
+                        type='submit'
+                        // disabled={!form.formState.isValid}
+                    >
                         Submit
                     </Button>
                 )}

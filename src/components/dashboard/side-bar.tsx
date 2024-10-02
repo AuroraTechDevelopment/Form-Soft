@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -6,34 +6,53 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
-import { FormInputIcon, MessageCircleHeart, Users } from 'lucide-react'
+import { FormInputIcon, MessageCircleHeart, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { Separator } from '../ui/separator'
+import { useEffect, useState } from 'react'
 
 const SideBar = () => {
-    // const [activeSection, setActiveSection] = useState('forms')
-
     const Links = [
         {
             title: 'Forms',
             href: '/dashboard/forms',
-            icon: <FormInputIcon className='mr-2 h-4 w-4' />,
+            icon: <FormInputIcon className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'Feedback',
             href: '/dashboard/feedback',
-            icon: <MessageCircleHeart className='mr-2 h-4 w-4' />,
+            icon: (
+                <MessageCircleHeart className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />
+            ),
         },
         {
             title: 'Settings',
             href: '/dashboard/settings',
-            icon: <Users className='mr-2 h-4 w-4' />,
+            icon: <Settings className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
     ]
 
+    // State to determine if the screen size is small
+    const [isMobile, setIsMobile] = useState(false)
+
+    const handleResize = () => {
+        if (window.innerWidth < 768) {
+            setIsMobile(true)
+        } else {
+            setIsMobile(false)
+        }
+    }
+
+    useEffect(() => {
+        handleResize() // Check initial size
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
+
     return (
-        <div className='flex h-full'>
-            <div className='sticky top-6 h-min min-w-48'>
+        <div className='flex h-full flex-col pl-6 md:w-[20%]'>
+            {/* Desktop Navigation */}
+            <div className='sticky top-6 hidden h-min min-w-48 md:block'>
                 <Link href={'/dashboard'}>
                     <h1 className='mb-6 text-2xl font-bold'>Dashboard</h1>
                 </Link>
@@ -57,6 +76,26 @@ const SideBar = () => {
                     </NavigationMenuList>
                 </NavigationMenu>
             </div>
+
+            {/* Mobile Bottom Navigation */}
+            {isMobile && (
+                <div className='fixed bottom-0 left-0 right-0 flex justify-around border-t border-gray-200 bg-white p-2 shadow-md md:hidden'>
+                    {Links.map((link, index) => (
+                        <Link
+                            key={index}
+                            href={link.href}
+                            legacyBehavior
+                            passHref
+                        >
+                            <div className='flex flex-col items-center justify-center'>
+                                {link.icon}
+                                <span className='text-xs'>{link.title}</span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            )}
+
             <Separator orientation='vertical' />
         </div>
     )

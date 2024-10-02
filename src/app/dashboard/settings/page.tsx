@@ -12,9 +12,16 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-
 import { toast } from '@/hooks/use-toast'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogOverlay,
+    DialogTitle,
+} from '@/components/ui/dialog'
+
 const Page = () => {
     const [user, setUser] = useState({
         fullName: 'John Doe',
@@ -22,6 +29,8 @@ const Page = () => {
         email: 'john@example.com',
         profilePicture: '/placeholder.svg?height=100&width=100',
     })
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
     const handleUserUpdate = (e: React.FormEvent) => {
         e.preventDefault()
@@ -32,14 +41,36 @@ const Page = () => {
         })
     }
 
-    const handleDeleteAccount = () => {
-        // Placeholder for account deletion logic
-        toast({
-            title: 'Account Deleted',
-            description: 'Your account has been successfully deleted.',
-            variant: 'destructive',
-        })
+    const handleDeleteAccount = async () => {
+        try {
+            // Call the API to delete the account
+            const response = await fetch('/api/delete-account', {
+                method: 'DELETE',
+            })
+            if (response.ok) {
+                toast({
+                    title: 'Account Deleted',
+                    description: 'Your account has been successfully deleted.',
+                    variant: 'destructive',
+                })
+                // Optionally redirect or update the UI
+            } else {
+                throw new Error('Failed to delete account')
+            }
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : 'An unknown error occurred',
+                variant: 'destructive',
+            })
+        } finally {
+            setShowDeleteDialog(false)
+        }
     }
+
     return (
         <Card>
             <CardHeader>
@@ -107,11 +138,56 @@ const Page = () => {
                     <Button type='submit'>Save Changes</Button>
                 </form>
             </CardContent>
-            <CardFooter>
-                <Button variant='destructive' onClick={handleDeleteAccount}>
-                    Delete Account
-                </Button>
+
+            {/* Delete Account Section */}
+            <CardFooter className='m-3 flex flex-col items-start rounded-lg bg-red-100 p-3'>
+                <div className='flex flex-col items-start space-y-2'>
+                    <h2 className='text-lg font-bold text-red-600'>
+                        Danger Zone
+                    </h2>
+                    <p className='text-sm text-gray-600'>
+                        Deleting your account is irreversible. This action will
+                        permanently remove your data and cannot be undone.
+                    </p>
+                    <Button
+                        variant='destructive'
+                        onClick={() => setShowDeleteDialog(true)}
+                    >
+                        Delete Account
+                    </Button>
+                </div>
             </CardFooter>
+
+            {/* Delete Confirmation Dialog */}
+            {showDeleteDialog && (
+                <Dialog
+                    open={showDeleteDialog}
+                    onOpenChange={setShowDeleteDialog}
+                >
+                    <DialogOverlay />
+                    <DialogContent className='w-[90%] rounded-lg md:w-full'>
+                        <DialogTitle>Confirm Account Deletion</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete your account? This
+                            action cannot be undone.
+                        </DialogDescription>
+                        <div className='flex justify-end space-x-2'>
+                            <Button
+                                variant='outline'
+                                onClick={() => setShowDeleteDialog(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant='destructive'
+                                onClick={handleDeleteAccount}
+                            >
+                                Confirm
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
         </Card>
     )
 }

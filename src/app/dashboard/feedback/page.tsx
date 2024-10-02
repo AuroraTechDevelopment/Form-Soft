@@ -1,4 +1,6 @@
 'use client'
+
+import { useState } from 'react'
 import {
     Card,
     CardContent,
@@ -14,22 +16,56 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+
 const Page = () => {
     const [feedback, setFeedback] = useState({ category: '', comment: '' })
 
-    const handleFeedbackSubmit = (e: React.FormEvent) => {
+    const handleFeedbackSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Placeholder for feedback submission logic
-        toast({
-            title: 'Feedback Submitted',
-            description: 'Thank you for your feedback!',
-        })
-        setFeedback({ category: '', comment: '' })
+
+        try {
+            // Make a POST request to the App Router API
+            const response = await fetch('/api/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    category: feedback.category,
+                    comment: feedback.comment,
+                    userID: '9f78eb4d-d2b5-4365-822a-a11d2ecc28d0', // Temporarily hardcode the user ID
+                }),
+            })
+
+            if (response.ok) {
+                const result = await response.json()
+                // Feedback submitted successfully
+                toast({
+                    title: 'Feedback Submitted',
+                    description: result.message,
+                })
+
+                // Clear the form
+                setFeedback({ category: '', comment: '' })
+            } else {
+                const errorData = await response.json()
+                toast({
+                    title: 'Submission Error',
+                    description: errorData.error || 'An error occurred',
+                })
+            }
+        } catch (error) {
+            console.error('Submission Error:', error)
+            toast({
+                title: 'Submission Error',
+                description: 'An error occurred while submitting feedback',
+            })
+        }
     }
+
     return (
         <Card>
             <CardHeader>

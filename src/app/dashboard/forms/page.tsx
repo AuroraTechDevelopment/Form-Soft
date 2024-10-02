@@ -48,6 +48,7 @@ const Page = () => {
             variant: 'destructive',
         })
     }
+
     return (
         <Card>
             <CardHeader>
@@ -56,13 +57,14 @@ const Page = () => {
             </CardHeader>
             <CardContent>
                 <Button onClick={handleCreateForm} className='mb-4'>
-                    <Plus className='mr-2 h-4 w-4' /> Create New Form
+                    <Plus className='mr-2 h-4 w-4' />
+                    <span className='md:inline'>Create New Form</span>
                 </Button>
                 <div className='space-y-4'>
                     {forms.map((form) => (
                         <div
                             key={form.id}
-                            className='flex items-center justify-between rounded-lg bg-gray-50 p-4'
+                            className='flex w-full items-center justify-between rounded-lg bg-gray-50 p-4'
                         >
                             <div>
                                 <h3 className='font-semibold'>{form.title}</h3>
@@ -70,21 +72,27 @@ const Page = () => {
                                     Created on: {form.createdAt}
                                 </p>
                             </div>
-                            <div>
+                            <div className='flex flex-col items-center justify-center space-y-2 md:flex-row md:justify-end md:space-y-0'>
                                 <Button
                                     variant='outline'
                                     size='sm'
                                     onClick={() => handleUpdateForm(form.id)}
-                                    className='mr-2'
+                                    className='md:mr-2'
                                 >
-                                    <Pencil className='mr-2 h-4 w-4' /> Edit
+                                    <Pencil className='h-4 w-4 md:mr-2' />
+                                    <span className='hidden md:inline'>
+                                        Edit
+                                    </span>
                                 </Button>
                                 <Button
                                     variant='destructive'
                                     size='sm'
                                     onClick={() => handleDeleteForm(form.id)}
                                 >
-                                    <Trash className='mr-2 h-4 w-4' /> Delete
+                                    <Trash className='h-4 w-4 md:mr-2' />
+                                    <span className='hidden md:inline'>
+                                        Delete
+                                    </span>
                                 </Button>
                             </div>
                         </div>

@@ -18,7 +18,7 @@ import { Loader2 } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-const SignInForm = () => {
+const SignInCredentialsForm = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -128,4 +128,4 @@ const SignInForm = () => {
     )
 }
 
-export default SignInForm
+export default SignInCredentialsForm

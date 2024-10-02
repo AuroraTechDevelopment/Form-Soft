@@ -7,7 +7,7 @@ import {
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { prisma } from '@/server/prisma'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import Google from 'next-auth/providers/google'
+import Google, { GoogleProfile } from 'next-auth/providers/google'
 import { compare } from 'bcrypt'
 import { signInSchema } from '@/zod-schemas/auth'
 
@@ -49,6 +49,17 @@ export const authOptions: NextAuthOptions = {
             },
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            // profile(profile: GoogleProfile, tokens) {
+            //     console.log('profile', profile)
+            //     console.log('TOKEN', tokens)
+            //     return {
+            //         id: profile.sub,
+            //         email: profile.email,
+            //         name: profile.name,
+            //         image: profile.picture,
+            //         role: 'USER', // or any default role you want to assign
+            //     }
+            // },
         }),
         CredentialsProvider({
             name: 'Credentials',
@@ -60,7 +71,7 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 try {
-                    // console.log('credentials', credentials)
+                    console.log('credentials', credentials)
                     const validCredentials = signInSchema.safeParse(credentials)
 
                     if (!validCredentials.success) {
@@ -69,6 +80,7 @@ export const authOptions: NextAuthOptions = {
                         )
                     }
 
+                    console.log('Here...')
                     const { email, password } = validCredentials.data
 
                     const user = await prisma.user.findUnique({
@@ -102,22 +114,31 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         strategy: 'jwt',
-        maxAge: 30 * 24 * 60 * 60,
+        // maxAge: 30 * 24 * 60 * 60,
     },
     callbacks: {
-        async signIn({ account, profile }) {
-            if (account?.provider === 'google') {
-                // Check if the email exists in the database (users model)
+        // async signIn({ account, profile }) {
+        //     if (account?.provider === 'google') {
+        //         // Check if the email exists in the database (users model)
+        //         console.log('profile', profile)
+        //         /*
+        //         id: 'xxx',
+        //         name: 'Ahmed Tarek',
+        //         email: 'ahmedtarekabd2002@gmail.com',
+        //         image: 'https://lh3.googleusercontent.com/a/ACg8ocLfwaaH83bFJUeXGk4h1xdn6qTXDKczhgoV5LaDcc6CVhOlSA=s96-c'
+        //         */
+        //         console.log('account', account)
 
-                // If the email does not exist, create a new user
+        //         // If the email does not exist, create a new user
 
-                return (
-                    profile?.email_verified &&
-                    profile?.email?.endsWith('@gmail.com')
-                )
-            }
-            return true // Do different verification for other providers that don't have `email_verified`
-        },
+        //         return true
+        //         // return (
+        //         //     profile?.email_verified &&
+        //         //     profile?.email?.endsWith('@gmail.com')
+        //         // )
+        //     }
+        //     return true // Do different verification for other providers that don't have `email_verified`
+        // },
         async jwt({ token, user }) {
             if (user) {
                 token.user = user

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,19 +11,22 @@ datasource db {
 model User {
   id             String       @id @default(uuid())
   fullName       String // Random names by default: faker
-  username       String       @unique
+  username       String       @unique // First part of email is used as username
   profilePicture String?
-  email          String       @unique // First part of email is used as username
+  email          String       @unique
   password       String
   status         UserStatus   @default(UNVERIFIED)
   role           UserRole     @default(USER)
   preferences    Json?
-  forms          Form[]
-  submissions    Submission[]
-  feedbacks      Feedback[]
-  reports        Report[]
   createdAt      DateTime     @default(now())
   lastLogin      DateTime     @default(now())
+  feedbacks      Feedback[]
+  forms          Form[]
+  reports        Report[]
+  submissions    Submission[]
+  // Auth
+  Account        Account[]
+  Session        Session[]
 }
 
 model Form {
@@ -43,12 +40,12 @@ model Form {
   status          FormStatus
   viewCount       Int
   submissionCount Int
-  submissions     Submission[]
-  reports         Report[]
-  user            User         @relation(fields: [userID], references: [id])
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @default(now())
   deadline        DateTime
+  user            User         @relation(fields: [userID], references: [id])
+  reports         Report[]
+  submissions     Submission[]
 }
 
 model Submission {
@@ -56,9 +53,9 @@ model Submission {
   formID    String
   userID    String?
   answers   Json
+  createdAt DateTime @default(now())
   form      Form     @relation(fields: [formID], references: [id])
   user      User?    @relation(fields: [userID], references: [id])
-  createdAt DateTime @default(now())
 }
 
 model Feedback {
@@ -66,9 +63,8 @@ model Feedback {
   userID    String
   category  String
   comment   String
-  user      User     @relation(fields: [userID], references: [id])
   createdAt DateTime @default(now())
-  // reviewer, status
+  user      User     @relation(fields: [userID], references: [id])
 }
 
 model Report {
@@ -77,10 +73,9 @@ model Report {
   userID   String?
   category String
   comment  String
+  createAt DateTime @default(now())
   form     Form     @relation(fields: [formID], references: [id])
   user     User?    @relation(fields: [userID], references: [id])
-  createAt DateTime @default(now())
-  // reviewer, status
 }
 
 enum UserStatus {
@@ -104,4 +99,44 @@ enum FormStatus {
   ARCHIVED
   OPENED
   CLOSED
+}
+
+// Auth 
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
 }

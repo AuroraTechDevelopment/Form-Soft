@@ -43,6 +43,9 @@ export async function POST(req: NextRequest) {
             Number(process.env.SALT_ROUNDS!),
         )
 
+        // TODO: Check is username exists
+        // Add a random username faker.internet.userName()
+
         await prisma.user.create({
             data: {
                 email: email,

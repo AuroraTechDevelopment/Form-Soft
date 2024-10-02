@@ -1,5 +1,8 @@
 'use client'
-import SignInForm from '@/components/auth/SignInForm'
+import GoogleAuthButton from '@/components/auth/google-auth-button'
+import SignInCredentialsForm from '@/components/auth/signIn-credentials-form'
+import SignInOauth from '@/components/auth/signIn-Oauth'
+import SerparatorText from '@/components/serparator-text'
 import {
     Card,
     CardContent,
@@ -7,6 +10,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
@@ -18,7 +22,7 @@ const SignIn = () => {
         return
     }
     return (
-        <div className='h-screen-no-nav flex items-center justify-center'>
+        <div className='flex h-screen-no-nav items-center justify-center'>
             <Card className='flex flex-col items-center justify-center gap-2 shadow-md'>
                 <CardHeader className='space-y-4'>
                     <CardTitle className='text-lg font-bold'>Sign-in</CardTitle>
@@ -27,8 +31,10 @@ const SignIn = () => {
                         in real-time.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className='w-full'>
-                    <SignInForm />
+                <CardContent className='w-full space-y-4'>
+                    <SignInCredentialsForm />
+                    <SerparatorText text='OR' />
+                    <SignInOauth />
                 </CardContent>
             </Card>
         </div>

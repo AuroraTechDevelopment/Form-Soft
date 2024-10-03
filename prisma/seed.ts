@@ -7,19 +7,19 @@ const prisma = new PrismaClient()
 const getUsersData = async () => {
     const userData: Prisma.UserCreateInput[] = [
         {
-            fullName: 'Alice',
+            name: 'Alice',
             email: 'alice@prisma.io',
             password: await hash('Alice@1', process.env.SALT_ROUNDS!),
             username: 'alice',
         },
         {
-            fullName: 'Nilu',
+            name: 'Nilu',
             email: 'nilu@prisma.io',
             password: await hash('Nilu@1', process.env.SALT_ROUNDS!),
             username: 'nilu',
         },
         {
-            fullName: 'Mahmoud',
+            name: 'Mahmoud',
             email: 'mahmoud@prisma.io',
             password: await hash('Mahmoud@1', process.env.SALT_ROUNDS!),
             username: 'mahmoud',

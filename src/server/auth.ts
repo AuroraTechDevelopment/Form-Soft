@@ -10,6 +10,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import { compare } from 'bcrypt'
 import { signInSchema } from '@/zod-schemas/auth'
+import { UserRole } from '@prisma/client'
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -49,17 +50,8 @@ export const authOptions: NextAuthOptions = {
             },
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            // profile(profile: GoogleProfile, tokens) {
-            //     console.log('profile', profile)
-            //     console.log('TOKEN', tokens)
-            //     return {
-            //         id: profile.sub,
-            //         email: profile.email,
-            //         name: profile.name,
-            //         image: profile.picture,
-            //         role: 'USER', // or any default role you want to assign
-            //     }
-            // },
+            allowDangerousEmailAccountLinking: true, // We trust Google :)
+            checks: ['none'], // OAUTH_CALLBACK_ERROR: https://stackoverflow.com/questions/75141207/login-attempt-with-googleprovider-in-next-auth-returns-oauth-callback-error-and
         }),
         CredentialsProvider({
             name: 'Credentials',
@@ -71,7 +63,7 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 try {
-                    // console.log('credentials', credentials)
+                    console.log('credentials', credentials)
                     const validCredentials = signInSchema.safeParse(credentials)
 
                     if (!validCredentials.success) {
@@ -98,7 +90,7 @@ export const authOptions: NextAuthOptions = {
                     return {
                         id: user.id,
                         email: user.email,
-                        name: user.fullName,
+                        name: user.name,
                         role: user.role,
                     }
                 } catch (error) {
@@ -118,21 +110,24 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ account, profile }) {
             if (account?.provider === 'google' && profile) {
-                // console.log('profile', profile)
-                // console.log('account', account)
-                // If the email exists (users model), update the user (add image if not exists, link the account)
+                // console.log('signIn profile', profile)
+                // console.log('signIn account', account)
+
+                // Random password
+                const randomPassword = Math.random().toString(36).slice(-8)
+
+                // If the email exists (users model), update the user (add image if not exists)
                 // If the email does not exist, create a new user
                 await prisma.user.upsert({
                     where: { email: profile.email },
-                    update: {
-                        profilePicture: profile.image,
-                    },
+                    update: {},
                     create: {
-                        fullName: profile.name!,
+                        name: profile.name!,
                         email: profile.email!,
-                        profilePicture: profile.image!,
-                        password: 'google',
+                        image: profile.image!,
+                        password: randomPassword,
                         username: profile.email!.split('@')[0],
+                        role: UserRole.USER, // Any Signup user using OAuth will be a USER
                     },
                 })
 
@@ -151,6 +146,8 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             const user = token.user as User
+            // console.log('session ', session)
+            // console.log('token ', token)
 
             return {
                 ...session,
@@ -158,6 +155,7 @@ export const authOptions: NextAuthOptions = {
                     id: user.id,
                     email: user.email,
                     name: user.name,
+                    role: user.role,
                     image: user.image,
                 },
             }

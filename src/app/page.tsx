@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 export default function Home() {
     const { data: session } = useSession()
+    console.log('session', session)
     return (
         <div>
             {session?.user ? (

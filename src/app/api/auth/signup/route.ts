@@ -13,10 +13,10 @@ import { faker } from '@faker-js/faker'
  */
 export async function POST(req: NextRequest) {
     try {
-        const { email, password, fullName, role } = await req.json()
+        const { email, password, name, role } = await req.json()
         console.log('email', email)
         console.log('password', password)
-        console.log('fullName', fullName)
+        console.log('name', name)
         console.log('role', role)
 
         if (!email || !password) {
@@ -31,11 +31,11 @@ export async function POST(req: NextRequest) {
             })
         }
 
-        // Random username if fullName is not provided (Faster signup process)
-        const name = fullName || faker.internet.userName()
+        // Random user name if name is not provided (Faster signup process)
+        const name_ = name || faker.internet.userName()
         console.log('email', email)
         console.log('password', password)
-        console.log('fullName', fullName)
+        console.log('name', name)
         console.log('role', role)
 
         const hashedPassword = await hash(
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
                 email: email,
                 password: hashedPassword,
                 username: email.split('@')[0],
-                fullName: name,
+                name: name_,
                 role: role || 'USER',
             },
         })

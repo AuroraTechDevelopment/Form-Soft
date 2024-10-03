@@ -34,7 +34,7 @@ const SignUpForm = () => {
                 title: 'Success!',
                 description: response.data + ' Redirecting to login page.',
             })
-            window.location.href = '/login'
+            window.location.href = '/'
         } else {
             toast({
                 title: 'Error',

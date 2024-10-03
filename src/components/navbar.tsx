@@ -8,14 +8,17 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { Menu, X } from 'lucide-react'
+import Link from 'next/link'
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     return (
         <header className='z-40 flex h-16 w-full justify-between bg-white p-4 shadow-md'>
-            <div className='flex items-center space-x-4'>
-                <span className='text-xl font-bold'>Sentlytics</span>
+            <div className='flex items-center'>
+                <Link href='/' className='text-xl'>
+                    Sentlytics
+                </Link>
             </div>
 
             <div className='md:hidden'>

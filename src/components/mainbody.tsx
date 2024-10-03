@@ -3,7 +3,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { FcGoogle } from 'react-icons/fc'
-import { FaMicrosoft } from "react-icons/fa";
+import { FaMicrosoft } from 'react-icons/fa'
 
 export function MainBody() {
     const buttonVariants = {

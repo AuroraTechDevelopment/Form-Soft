@@ -38,7 +38,7 @@ export const WavyBackground = ({
     const getSpeed = () => {
         switch (speed) {
             case 'slow':
-                return 0.001
+                return 0.003
             case 'fast':
                 return 0.005
             default:
@@ -113,7 +113,7 @@ export const WavyBackground = ({
     return (
         <div
             className={cn(
-                'hidden md:flex h-screen flex-col items-center justify-center',
+                'hidden h-screen flex-col items-center justify-center md:flex',
                 containerClassName,
             )}
         >

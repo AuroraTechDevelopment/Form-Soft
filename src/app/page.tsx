@@ -11,7 +11,7 @@ export default function Home() {
                 className='z-50'
                 backgroundFill='#f9fafb'
                 blur={1}
-                speed='fast'
+                speed='slow'
             />
             <div className='z-10 flex flex-grow flex-col justify-between'>
                 <Navbar />

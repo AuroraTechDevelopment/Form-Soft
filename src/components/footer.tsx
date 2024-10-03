@@ -1,11 +1,21 @@
+'use client'
+
 import React from 'react'
 import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from 'react-icons/fa'
+import { IoIosArrowDown } from 'react-icons/io'
+import { IoLanguage } from 'react-icons/io5'
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 
 export function Footer() {
     return (
         <footer className='flex h-full flex-grow flex-col bg-white py-4 shadow-md'>
             {/* Upper section */}
-            <div className='mx-4 flex h-32 flex-col items-center justify-between md:mx-20 md:flex-row'>
+            <div className='mx-4 flex h-36 flex-col items-center justify-between md:mx-28 md:flex-row'>
                 <div className='flex items-center space-x-4'>
                     <p className='text-3xl font-bold'>Sentlytics</p>
                     <div className='flex flex-col space-y-1'>
@@ -15,13 +25,20 @@ export function Footer() {
                         <p className='text-left'>All Rights Are Reserved</p>
                     </div>
                 </div>
-                <select className='my-2 mt-4 rounded-md border bg-white md:mt-0'>
-                    <option value='en'>English</option>
-                    <option value='es'>Spanish</option>
-                    <option value='fr'>French</option>
-                </select>
+                <DropdownMenu>
+                    <DropdownMenuTrigger className='my-4 flex items-center space-x-4 rounded-md border bg-white p-2 md:mt-0'>
+                        <IoLanguage className='text-xl' />{' '}
+                        <IoIosArrowDown className='text-xl' />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem
+                            onClick={() => console.log('Selected: English')}
+                        >
+                            English
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
-
             {/* Lower section */}
             <div className='mx-4 flex h-full flex-col items-center justify-between border-t pt-4 md:mx-12 md:flex-row'>
                 <div className='flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0'>

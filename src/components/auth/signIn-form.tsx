@@ -18,7 +18,7 @@ import { Loader2 } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-const SignInCredentialsForm = () => {
+const SignInForm = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -116,10 +116,7 @@ const SignInCredentialsForm = () => {
                         <Loader2 size={24} className='animate-spin' />
                     </Button>
                 ) : (
-                    <Button
-                        type='submit'
-                        // disabled={!form.formState.isValid}
-                    >
+                    <Button type='submit' disabled={!form.formState.isValid}>
                         Submit
                     </Button>
                 )}
@@ -128,4 +125,4 @@ const SignInCredentialsForm = () => {
     )
 }
 
-export default SignInCredentialsForm
+export default SignInForm

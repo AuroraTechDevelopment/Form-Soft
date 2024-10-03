@@ -16,7 +16,6 @@ import { toast } from '@/hooks/use-toast'
 import axio from '@/lib/axios'
 import { signUpSchema, SignUpSchema } from '@/zod-schemas/auth'
 import { Loader2 } from 'lucide-react'
-import { redirect } from 'next/navigation'
 
 const SignUpForm = () => {
     const form = useForm<SignUpSchema>({
@@ -35,10 +34,7 @@ const SignUpForm = () => {
                 title: 'Success!',
                 description: response.data + ' Redirecting to login page.',
             })
-            // setTimeout(() => {
-            //     window.location.href = '/login'
-            // }, 1000)
-            redirect('/login')
+            window.location.href = '/login'
         } else {
             toast({
                 title: 'Error',

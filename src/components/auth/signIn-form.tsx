@@ -17,6 +17,7 @@ import { signInSchema, SignInSchema } from '@/zod-schemas/auth'
 import { Loader2 } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { login } from '@/app/actions/auth'
 
 const SignInForm = () => {
     const router = useRouter()
@@ -68,7 +69,8 @@ const SignInForm = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+            {/* <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'> */}
+            <form action={login} className='space-y-6'>
                 <FormField
                     control={form.control}
                     name='email'

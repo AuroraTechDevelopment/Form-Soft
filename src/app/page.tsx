@@ -1,27 +1,44 @@
-'use client'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/server'
 import { LogOut } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+// import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { signOut } from './actions/auth'
 
-export default function Home() {
-    const { data: session } = useSession()
-    console.log('session', session)
+export default async function Home() {
+    // const { data: session } = useSession()
+
+    const supabase = createClient()
+
+    const {
+        data: { user },
+        error,
+    } = await supabase.auth.getUser()
+    // const { data: session, error } = await supabase.auth.getSession()
+    if (error || !user) {
+        console.log('error:', error)
+        console.log('user:', user)
+        // redirect('/signin')
+    }
+
     return (
         <div>
-            {session?.user ? (
+            {user ? (
                 <>
-                    <h1>Welcome {session.user.name}</h1>
-                    <p>Your email is {session.user.email}</p>
-                    <Button
-                        variant='ghost'
-                        className='text-red-500'
-                        onClick={async () => {
-                            await signOut()
-                        }}
-                    >
-                        <LogOut /> <span>Log out</span>
-                    </Button>
+                    {/* <h1>Welcome {user.name}</h1> */}
+                    <p>Your email is {user.email}</p>
+                    <form>
+                        <Button
+                            variant='ghost'
+                            className='text-red-500'
+                            formAction={signOut}
+                            // onClick={async () => {
+                            //     await signOut()
+                            // }}
+                        >
+                            <LogOut /> <span>Log out</span>
+                        </Button>
+                    </form>
                 </>
             ) : (
                 <>

@@ -1,3 +1,22 @@
-import { NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
-export async function middleware(req: NextRequest) {}
+export async function middleware(request: NextRequest) {
+    const protectedPaths = ['/admin', '/account']
+    return await updateSession(request, { protectedPaths })
+}
+
+// Routes Middleware should not run on
+// Aka. Don't apply this middleware to the following paths
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * Feel free to modify this pattern to include more paths.
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
+}

@@ -16,6 +16,7 @@ import { toast } from '@/hooks/use-toast'
 import axio from '@/lib/axios'
 import { signUpSchema, SignUpSchema } from '@/zod-schemas/auth'
 import { Loader2 } from 'lucide-react'
+import { signup } from '@/app/actions/auth'
 
 const SignUpForm = () => {
     const form = useForm<SignUpSchema>({
@@ -46,7 +47,8 @@ const SignUpForm = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+            {/* <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'> */}
+            <form action={signup} className='space-y-6'>
                 <FormField
                     control={form.control}
                     name='email'

@@ -1,6 +1,4 @@
 import { ThemeProvider } from './theme-provider'
-import SessionProviderWrapper from './session-provider'
-import { Session } from 'next-auth'
 
 /**
  * Providers wrapper for all of our context providers.
@@ -12,17 +10,13 @@ import { Session } from 'next-auth'
 export default function Providers({
     children,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: { session, ...params },
 }: Readonly<{
     children: React.ReactNode
-    params: { session: Session }
 }>) {
     return (
         <ThemeProvider>
-            <SessionProviderWrapper session={session}>
-                {/* Nest Providers here... */}
-                {children}
-            </SessionProviderWrapper>
+            {/* Nest Providers here... */}
+            {children}
         </ThemeProvider>
     )
 }

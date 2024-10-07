@@ -1,3 +1,5 @@
+'use client'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
@@ -15,17 +17,9 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import { signInSchema, SignInSchema } from '@/zod-schemas/auth'
 import { Loader2 } from 'lucide-react'
-import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { login } from '@/app/actions/auth'
 
 const SignInForm = () => {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-
-    const callbackURL = searchParams.get('callbackURL') || '/'
-    console.log(callbackURL)
-
     const form = useForm<SignInSchema>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
@@ -41,36 +35,30 @@ const SignInForm = () => {
         if (!validCredentials.success) {
             toast({
                 title: 'Error',
-                description: 'Login Failed\n' + validCredentials.error,
+                description: 'Login Failed: ' + validCredentials.error,
                 variant: 'destructive',
             })
             return
         }
 
-        const res = await signIn('credentials', {
-            ...validCredentials.data,
-            redirect: false,
-        })
-        if (res?.ok) {
-            toast({
-                title: 'Success',
-                description: 'You have been logged in Successfully',
-            })
-            router.push(callbackURL)
-        } else {
-            console.log(res)
+        const res = await login(validCredentials.data)
+        if (res && !res.success) {
             toast({
                 title: 'Error',
-                description: 'Login Failed\n' + res?.error,
+                description: 'Login Failed: ' + res?.error.message,
                 variant: 'destructive',
+            })
+        } else {
+            toast({
+                title: 'Success',
+                description: 'Login Successful',
             })
         }
     }
 
     return (
         <Form {...form}>
-            {/* <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'> */}
-            <form action={login} className='space-y-6'>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
                 <FormField
                     control={form.control}
                     name='email'

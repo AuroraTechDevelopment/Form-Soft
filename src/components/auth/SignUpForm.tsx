@@ -1,3 +1,5 @@
+'use client'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
@@ -13,7 +15,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
-import axio from '@/lib/axios'
 import { signUpSchema, SignUpSchema } from '@/zod-schemas/auth'
 import { Loader2 } from 'lucide-react'
 import { signup } from '@/app/actions/auth'
@@ -29,26 +30,37 @@ const SignUpForm = () => {
     })
 
     async function onSubmit(data: SignUpSchema) {
-        const response = await axio.post('/api/auth/signup', data)
-        if (response.status === 200) {
-            toast({
-                title: 'Success!',
-                description: response.data + ' Redirecting to login page.',
-            })
-            window.location.href = '/'
-        } else {
+        // validate the form
+        const validCredentials = signUpSchema.safeParse(data)
+
+        if (!validCredentials.success) {
             toast({
                 title: 'Error',
-                description: response.data,
+                description: 'Registeration Failed: ' + validCredentials.error,
                 variant: 'destructive',
+            })
+            return
+        }
+
+        const res = await signup(validCredentials.data)
+        if (!res?.success) {
+            toast({
+                title: 'Error',
+                description:
+                    'Registeration Failed: ' + res?.error?.message || '',
+                variant: 'destructive',
+            })
+        } else {
+            toast({
+                title: 'Success',
+                description: 'Registeration Successful',
             })
         }
     }
 
     return (
         <Form {...form}>
-            {/* <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'> */}
-            <form action={signup} className='space-y-6'>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
                 <FormField
                     control={form.control}
                     name='email'

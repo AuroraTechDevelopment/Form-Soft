@@ -1,41 +1,5 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { SupportedStorage } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-
-function supportsLocalStorage(): boolean {
-    try {
-        const testKey = '__test__';
-        globalThis.localStorage.setItem(testKey, testKey);
-        globalThis.localStorage.removeItem(testKey);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-const customStorageAdapter: SupportedStorage = {
-    getItem: (key) => {
-        if (!supportsLocalStorage()) {
-            // Configure alternate storage
-            return null
-        }
-        return globalThis.localStorage.getItem(key)
-    },
-    setItem: (key, value) => {
-        if (!supportsLocalStorage()) {
-            // Configure alternate storage here
-            return
-        }
-        globalThis.localStorage.setItem(key, value)
-    },
-    removeItem: (key) => {
-        if (!supportsLocalStorage()) {
-            // Configure alternate storage here
-            return
-        }
-        globalThis.localStorage.removeItem(key)
-    },
-}
 
 export function createClient() {
     const cookieStore = cookies()

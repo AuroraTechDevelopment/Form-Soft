@@ -1,4 +1,3 @@
-'use client'
 import SignInForm from '@/components/auth/signIn-form'
 import SignInOauth from '@/components/auth/signIn-Oauth'
 import SerparatorText from '@/components/serparator-text'
@@ -9,16 +8,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 const SignIn = () => {
-    const { status } = useSession()
-    const router = useRouter()
-    if (status === 'authenticated') {
-        router.push('/')
-        return
-    }
     return (
         <div className='flex h-screen-no-nav items-center justify-center'>
             <Card className='flex flex-col items-center justify-center gap-2 shadow-md'>

@@ -17,7 +17,7 @@ export function Footer() {
             {/* Upper section */}
             <div className='mx-4 flex h-36 flex-col items-center justify-between md:mx-28 md:flex-row'>
                 <div className='flex items-center space-x-4'>
-                    <p className='text-3xl font-bold'>Sentlytics</p>
+                    <p className='text-3xl font-bold'>Survai</p>
                     <div className='flex flex-col space-y-1'>
                         <p className='text-left'>
                             Address: 123 Main St, Anytown, USA

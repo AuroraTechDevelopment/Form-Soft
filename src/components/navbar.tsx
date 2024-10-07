@@ -16,8 +16,8 @@ export function Navbar() {
     return (
         <header className='z-40 flex h-16 w-full justify-between bg-white p-4 shadow-md'>
             <div className='flex items-center'>
-                <Link href='/' className='text-xl'>
-                    Sentlytics
+                <Link href='/' className='text-2xl font-bold'>
+                    Survai
                 </Link>
             </div>
 

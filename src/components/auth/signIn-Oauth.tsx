@@ -17,13 +17,13 @@ const SignInOauth = () => {
                     className='flex w-full items-center justify-center gap-2'
                     onClick={async () => {
                         const res = await loginOAuth('google')
-                        if (!res?.success)
+                        if (res && !res?.success)
                             toast({
                                 title: 'Error',
                                 description: 'Login Failed\n' + res?.error,
                                 variant: 'destructive',
                             })
-                    }}
+                        }}
                 >
                     <Image
                         src={googleIcon}

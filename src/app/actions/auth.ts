@@ -93,18 +93,18 @@ export async function login(data: SignInSchema) {
 }
 
 export async function loginOAuth(provider: string) {
-    const { success } = await getCurrentUser()
-    if (success) {
-        return {
-            success: false,
-            error: {
-                message: 'You are already logged in',
-            },
-        }
-    }
+    // const { success } = await getCurrentUser()
+    // if (success) {
+    //     return {
+    //         success: false,
+    //         error: {
+    //             message: 'You are already logged in',
+    //         },
+    //     }
+    // }
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider as Provider,
         options: {
             redirectTo: `${process.env.NEXT_PUBLIC_OAUTH_URL}/api/auth/callback`,
@@ -122,6 +122,9 @@ export async function loginOAuth(provider: string) {
     }
 
     revalidatePath('/', 'layout')
+    if (data.url) {
+        redirect(data.url) // use the redirect API for your server framework
+    }
     redirect('/')
 }
 

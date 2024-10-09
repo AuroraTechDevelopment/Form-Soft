@@ -100,25 +100,27 @@ const SideBar = ({ type }: { type: 'admin' | 'user' }) => {
     return (
         <div className='flex h-full min-h-screen flex-col pt-4 shadow-lg md:w-[25%] md:pl-6'>
             {/* Desktop Navigation */}
-            <NavigationMenu
-                orientation='vertical'
-                className='hidden w-full items-start justify-start md:block'
-            >
-                <NavigationMenuList className='w-full flex-col items-start justify-start space-x-0 space-y-2'>
-                    {Links.map((link, index) => (
-                        <NavigationMenuItem key={index}>
-                            <Link href={link.href}>
-                                <NavigationMenuLink
-                                    className={navigationMenuTriggerStyle()}
-                                >
-                                    {link.icon}
-                                    <div className='ml-2'>{link.title}</div>
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
-                    ))}
-                </NavigationMenuList>
-            </NavigationMenu>
+            <div className='sticky top-6 hidden h-min min-w-48 md:block'>
+                <NavigationMenu
+                    orientation='vertical'
+                    className='hidden w-full items-start justify-start md:block'
+                >
+                    <NavigationMenuList className='w-full flex-col items-start justify-start space-x-0 space-y-2'>
+                        {Links.map((link, index) => (
+                            <NavigationMenuItem key={index}>
+                                <Link href={link.href}>
+                                    <NavigationMenuLink
+                                        className={navigationMenuTriggerStyle()}
+                                    >
+                                        {link.icon}
+                                        <div className='ml-2'>{link.title}</div>
+                                    </NavigationMenuLink>
+                                </Link>
+                            </NavigationMenuItem>
+                        ))}
+                    </NavigationMenuList>
+                </NavigationMenu>
+            </div>
 
             {/* Slidable Mobile Bottom Navigation for Admin */}
             {isMobile && type === 'admin' && (

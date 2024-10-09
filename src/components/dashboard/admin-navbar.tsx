@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function AdminNavbar() {
     return (
-        <nav className='sticky top-0 z-50 bg-white shadow-sm'>
+        <nav className='bg-white shadow-sm'>
             <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                 <div className='flex h-16 justify-between'>
                     <div className='flex'>

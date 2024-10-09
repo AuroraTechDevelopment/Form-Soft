@@ -26,37 +26,37 @@ const SideBar = ({ type }: { type: 'admin' | 'user' }) => {
         {
             title: 'Dashboard',
             href: '/admin/dashboard',
-            icon: <Layout className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <Layout className='h-6 w-6' />,
         },
         {
             title: 'Form Management',
             href: '/admin/forms',
-            icon: <FileText className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <FileText className='h-6 w-6' />,
         },
         {
             title: 'User Management',
             href: '/admin/users',
-            icon: <Users className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <Users className='h-6 w-6' />,
         },
         {
             title: 'Moderator Management',
             href: '/admin/moderators',
-            icon: <Shield className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <Shield className='h-6 w-6' />,
         },
         {
             title: 'View Reports',
             href: '/admin/reports',
-            icon: <Flag className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <Flag className='h-6 w-6' />,
         },
         {
             title: 'View Feedback',
             href: '/admin/feedbacks',
-            icon: <MessageSquare className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <MessageSquare className='h-6 w-6' />,
         },
         {
             title: 'Settings',
             href: '/admin/settings',
-            icon: <Settings className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <Settings className='h-6 w-6' />,
         },
     ]
 
@@ -65,23 +65,22 @@ const SideBar = ({ type }: { type: 'admin' | 'user' }) => {
         {
             title: 'Forms',
             href: '/dashboard/forms',
-            icon: <FileText className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <FileText className='h-6 w-6' />,
         },
         {
             title: 'Feedback',
             href: '/dashboard/feedback',
-            icon: <MessageSquare className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <MessageSquare className='h-6 w-6' />,
         },
         {
             title: 'Settings',
             href: '/dashboard/settings',
-            icon: <Settings className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <Settings className='h-6 w-6' />,
         },
     ]
 
     const Links = type === 'admin' ? AdminLinks : UserLinks
 
-    // State to determine if the screen size is small
     const [isMobile, setIsMobile] = useState(false)
 
     const handleResize = () => {
@@ -99,50 +98,52 @@ const SideBar = ({ type }: { type: 'admin' | 'user' }) => {
     }, [])
 
     return (
-        <div className='flex h-full flex-col pl-6 md:w-[20%]'>
+        <div className='flex h-full min-h-screen flex-col pt-4 shadow-lg md:w-[25%] md:pl-6'>
             {/* Desktop Navigation */}
-            <div className='sticky top-6 hidden h-min min-w-48 md:block'>
-                <Link
-                    href={type === 'admin' ? '/admin/dashboard' : '/dashboard'}
-                >
-                    <h1 className='mb-6 text-2xl font-bold'>
-                        {type === 'admin'
-                            ? 'Admin Dashboard'
-                            : 'User Dashboard'}
-                    </h1>
-                </Link>
-                <NavigationMenu
-                    orientation='vertical'
-                    className='w-full items-start justify-start'
-                >
-                    <NavigationMenuList className='w-full flex-col items-start justify-start space-x-0 space-y-2'>
-                        {Links.map((link, index) => (
-                            <NavigationMenuItem key={index}>
-                                <Link href={link.href} legacyBehavior passHref>
-                                    <NavigationMenuLink
-                                        className={navigationMenuTriggerStyle()}
-                                    >
-                                        {link.icon}
-                                        {link.title}
-                                    </NavigationMenuLink>
-                                </Link>
-                            </NavigationMenuItem>
-                        ))}
-                    </NavigationMenuList>
-                </NavigationMenu>
-            </div>
-
-            {/* Mobile Bottom Navigation */}
-            {isMobile && (
-                <div className='fixed bottom-0 left-0 right-0 flex justify-around border-t border-gray-200 bg-white p-2 shadow-md md:hidden'>
+            <NavigationMenu
+                orientation='vertical'
+                className='hidden w-full items-start justify-start md:block'
+            >
+                <NavigationMenuList className='w-full flex-col items-start justify-start space-x-0 space-y-2'>
                     {Links.map((link, index) => (
-                        <Link
-                            key={index}
-                            href={link.href}
-                            legacyBehavior
-                            passHref
-                        >
-                            <div className='flex flex-col items-center justify-center'>
+                        <NavigationMenuItem key={index}>
+                            <Link href={link.href}>
+                                <NavigationMenuLink
+                                    className={navigationMenuTriggerStyle()}
+                                >
+                                    {link.icon}
+                                    <div className='ml-2'>{link.title}</div>
+                                </NavigationMenuLink>
+                            </Link>
+                        </NavigationMenuItem>
+                    ))}
+                </NavigationMenuList>
+            </NavigationMenu>
+
+            {/* Slidable Mobile Bottom Navigation for Admin */}
+            {isMobile && type === 'admin' && (
+                <div className='fixed bottom-0 left-0 right-0 z-50 flex overflow-x-auto bg-white p-4 shadow-md md:hidden'>
+                    <div className='flex w-max space-x-6'>
+                        {Links.map((link, index) => (
+                            <Link key={index} href={link.href}>
+                                <div className='flex h-full w-full flex-col items-center justify-center space-x-2'>
+                                    {link.icon}
+                                    <span className='text-center text-xs'>
+                                        {link.title}
+                                    </span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Mobile Bottom Navigation for User */}
+            {isMobile && type === 'user' && (
+                <div className='fixed bottom-0 left-0 right-0 flex justify-around border-t border-gray-200 bg-white p-4 shadow-md md:hidden'>
+                    {Links.map((link, index) => (
+                        <Link key={index} href={link.href}>
+                            <div className='flex flex-col items-center justify-center space-x-2'>
                                 {link.icon}
                                 <span className='text-xs'>{link.title}</span>
                             </div>

@@ -69,7 +69,14 @@ const FormManagementContent = () => {
         setIsOpen(true)
     }
 
-    const handleEdit = (form: SetStateAction<{ id: string; title: string; createdBy: string; submissions: number }>) => {
+    const handleEdit = (
+        form: SetStateAction<{
+            id: string
+            title: string
+            createdBy: string
+            submissions: number
+        }>,
+    ) => {
         setIsEditing(true)
         setCurrentForm(form)
         setIsOpen(true)

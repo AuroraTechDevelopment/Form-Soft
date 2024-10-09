@@ -3,7 +3,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { FcGoogle } from 'react-icons/fc'
-import { FaMicrosoft } from 'react-icons/fa'
+// import { FaMicrosoft } from 'react-icons/fa'
 
 export function MainBody() {
     const buttonVariants = {
@@ -61,7 +61,7 @@ export function MainBody() {
                             <FcGoogle className='mr-2 h-6 w-6' /> Sign up
                         </Button>
                     </motion.div>
-                    <motion.div
+                    {/* <motion.div
                         variants={buttonVariants}
                         whileHover='hover'
                         whileTap='tap'
@@ -74,7 +74,7 @@ export function MainBody() {
                             <FaMicrosoft className='mr-2 h-6 w-6 text-cyan-500' />{' '}
                             Sign up
                         </Button>
-                    </motion.div>
+                    </motion.div> */}
                 </div>
             </motion.div>
         </div>

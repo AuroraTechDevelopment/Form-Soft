@@ -7,11 +7,15 @@ import {
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 import {
-    FormInputIcon,
-    MessageCircleHeart,
-    Settings,
+    Layout,
     Users,
-} from 'lucide-react' // Add more icons if needed
+    FileText,
+    Shield,
+    Flag,
+    MessageSquare,
+    Settings,
+} from 'lucide-react'
+
 import Link from 'next/link'
 import { Separator } from '../ui/separator'
 import { useEffect, useState } from 'react'
@@ -20,33 +24,38 @@ const SideBar = ({ type }: { type: 'admin' | 'user' }) => {
     // Admin-specific links
     const AdminLinks = [
         {
+            title: 'Dashboard',
+            href: '/admin/dashboard',
+            icon: <Layout className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+        },
+        {
             title: 'Form Management',
-            href: '/admin/dashboard/forms',
-            icon: <Users className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            href: '/admin/forms',
+            icon: <FileText className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'User Management',
-            href: '/admin/dashboard/users',
+            href: '/admin/users',
             icon: <Users className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'Moderator Management',
-            href: '/admin/dashboard/moderators',
-            icon: <Users className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            href: '/admin/moderators',
+            icon: <Shield className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'View Reports',
-            href: '/admin/dashboard/reports',
-            icon: <Users className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            href: '/admin/reports',
+            icon: <Flag className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'View Feedback',
-            href: '/admin/dashboard/feedbacks',
-            icon: <Users className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            href: '/admin/feedbacks',
+            icon: <MessageSquare className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'Settings',
-            href: '/admin/dashboard/settings',
+            href: '/admin/settings',
             icon: <Settings className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
     ]
@@ -56,14 +65,12 @@ const SideBar = ({ type }: { type: 'admin' | 'user' }) => {
         {
             title: 'Forms',
             href: '/dashboard/forms',
-            icon: <FormInputIcon className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
+            icon: <FileText className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'Feedback',
             href: '/dashboard/feedback',
-            icon: (
-                <MessageCircleHeart className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />
-            ),
+            icon: <MessageSquare className='h-6 w-6 md:mr-2 md:h-4 md:w-4' />,
         },
         {
             title: 'Settings',

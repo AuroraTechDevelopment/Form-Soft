@@ -1,3 +1,4 @@
+import AdminNavbar from '@/components/dashboard/admin-navbar'
 import SideBar from '@/components/dashboard/side-bar'
 // import { getServerAuthSession } from '@/server/auth'
 // import { redirect } from 'next/navigation'
@@ -15,11 +16,14 @@ export default async function Layout({
     // }
 
     return (
-        <div className='flex min-h-screen py-6'>
-            <SideBar type='admin' />
-            <main className='mx-auto mb-12 w-full pr-6 md:mb-0 md:w-[70%]'>
-                {children}
-            </main>
+        <div className='min-h-screen flex-col'>
+            <AdminNavbar />
+            <div className='flex'>
+                <SideBar type='admin' />
+                <main className='mx-auto mb-12 w-full p-2 px-4 md:mb-0 md:w-[70%]'>
+                    {children}
+                </main>
+            </div>
         </div>
     )
 }

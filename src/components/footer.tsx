@@ -10,34 +10,39 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
-
+import Image from 'next/image'
 export function Footer() {
     return (
         <footer className='flex h-full flex-grow flex-col bg-white py-4 shadow-md'>
             {/* Upper section */}
-            <div className='mx-4 flex h-36 flex-col items-center justify-between md:mx-28 md:flex-row'>
-                <div className='flex items-center space-x-4'>
-                    <p className='text-3xl font-bold'>Survai</p>
-                    <div className='flex flex-col space-y-1'>
-                        <p className='text-left'>
-                            Address: 123 Main St, Anytown, USA
-                        </p>
-                        <p className='text-left'>All Rights Are Reserved</p>
+            <div className='mx-4 flex h-52 flex-col justify-between md:mx-28 md:h-40 md:flex-row'>
+                <div className='flex flex-col items-center space-y-2 p-2 md:flex-row md:space-x-4'>
+                    <Image
+                        src='/images/logo-light.png'
+                        alt='Survai Logo'
+                        width={100}
+                        height={100}
+                    />
+                    <div className='flex flex-col space-y-1 text-center md:text-left'>
+                        <p>Address: 123 Main St, Anytown, USA</p>
+                        <p>All Rights Are Reserved</p>
                     </div>
                 </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger className='my-4 flex items-center space-x-4 rounded-md border bg-white p-2 md:mt-0'>
-                        <IoLanguage className='text-xl' />{' '}
-                        <IoIosArrowDown className='text-xl' />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem
-                            onClick={() => console.log('Selected: English')}
-                        >
-                            English
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className='mb-4 flex justify-center md:items-start md:justify-start'>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className='flex items-center space-x-4 rounded-md border bg-white p-2 md:mt-0'>
+                            <IoLanguage className='text-xl' />{' '}
+                            <IoIosArrowDown className='text-xl' />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                onClick={() => console.log('Selected: English')}
+                            >
+                                English
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
             {/* Lower section */}
             <div className='mx-4 flex h-full flex-col items-center justify-between border-t pt-4 md:mx-12 md:flex-row'>

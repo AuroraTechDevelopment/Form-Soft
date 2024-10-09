@@ -1,8 +1,8 @@
-export default function EnhancedUserDashboard() {
-    return (
-        <div className='flex h-screen'>
-            {/* Main content */}
-            <main className='flex-1 overflow-auto p-8'>Welcome</main>
-        </div>
-    )
+import { redirect } from 'next/navigation'
+
+export default function Dashboard() {
+    // Redirect to the /dashboard/form route
+    redirect('/dashboard/forms')
+
+    return null // No need to render anything, just handle the redirect
 }

@@ -18,7 +18,6 @@ import {
     XAxis,
     YAxis,
     CartesianGrid,
-    ResponsiveContainer,
     LineChart,
     Line,
     PieChart,
@@ -35,7 +34,7 @@ const newUsersData = [
 const formsCreatedData = [
     { name: 'Last 24h', value: 50 },
     { name: 'Last Week', value: 300 },
-    { name: 'Last Month', value: 1200 },
+    { name: 'Last Month', value: 1160 },
 ]
 
 const activeUsersData = [
@@ -44,8 +43,8 @@ const activeUsersData = [
 ]
 
 const formsFilledData = [
-    { name: 'Last 24h', value: 200 },
-    { name: 'Last 7 days', value: 1500 },
+    { name: 'Last 24h', value: 160 },
+    { name: 'Last 7 days', value: 1600 },
     { name: 'Last 30 days', value: 6000 },
 ]
 
@@ -58,7 +57,7 @@ const feedbackReportsData = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
 
 const AdminDashboard = () => (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+    <div className='grid grid-cols-1 gap-4 py-4 md:grid-cols-3'>
         {/* New Users Card */}
         <Card>
             <CardHeader>
@@ -73,17 +72,15 @@ const AdminDashboard = () => (
                             color: 'hsl(var(--chart-1))',
                         },
                     }}
-                    className='h-[200px] w-full'
+                    className='h-[160px] w-full'
                 >
-                    <ResponsiveContainer width='100%' height='100%'>
-                        <BarChart data={newUsersData}>
-                            <CartesianGrid strokeDasharray='3 3' />
-                            <XAxis dataKey='name' />
-                            <YAxis />
-                            <ChartTooltip content={<ChartTooltipContent />} />
-                            <Bar dataKey='value' fill='var(--color-value)' />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <BarChart data={newUsersData}>
+                        <CartesianGrid strokeDasharray='3 3' />
+                        <XAxis dataKey='name' />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar dataKey='value' fill='var(--color-value)' />
+                    </BarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
@@ -102,21 +99,19 @@ const AdminDashboard = () => (
                             color: 'hsl(var(--chart-2))',
                         },
                     }}
-                    className='h-[200px] w-full'
+                    className='h-[160px] w-full'
                 >
-                    <ResponsiveContainer width='100%' height='100%'>
-                        <LineChart data={formsCreatedData}>
-                            <CartesianGrid strokeDasharray='3 3' />
-                            <XAxis dataKey='name' />
-                            <YAxis />
-                            <ChartTooltip content={<ChartTooltipContent />} />
-                            <Line
-                                type='monotone'
-                                dataKey='value'
-                                stroke='var(--color-value)'
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
+                    <LineChart data={formsCreatedData}>
+                        <CartesianGrid strokeDasharray='3 3' />
+                        <XAxis dataKey='name' />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Line
+                            type='monotone'
+                            dataKey='value'
+                            stroke='var(--color-value)'
+                        />
+                    </LineChart>
                 </ChartContainer>
             </CardContent>
         </Card>
@@ -137,23 +132,21 @@ const AdminDashboard = () => (
                             color: 'hsl(var(--chart-4))',
                         },
                     }}
-                    className='h-[200px] w-full'
+                    className='h-[160px] w-full'
                 >
-                    <ResponsiveContainer width='100%' height='100%'>
-                        <BarChart data={formsFilledData}>
-                            <CartesianGrid strokeDasharray='3 3' />
-                            <XAxis dataKey='name' />
-                            <YAxis />
-                            <ChartTooltip content={<ChartTooltipContent />} />
-                            <Bar dataKey='value' fill='var(--color-value)' />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <BarChart data={formsFilledData}>
+                        <CartesianGrid strokeDasharray='3 3' />
+                        <XAxis dataKey='name' />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar dataKey='value' fill='var(--color-value)' />
+                    </BarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
 
         {/* Active Users Card (Takes Full Width) */}
-        <Card className='md:col-span-3'>
+        <Card className='md:col-span-2'>
             <CardHeader>
                 <CardTitle>Recently Active Users</CardTitle>
                 <CardDescription>
@@ -168,35 +161,33 @@ const AdminDashboard = () => (
                             color: 'hsl(var(--chart-3))',
                         },
                     }}
-                    className='h-[200px] w-full'
+                    className='h-[160px] w-full'
                 >
-                    <ResponsiveContainer width='100%' height='100%'>
-                        <PieChart>
-                            <Pie
-                                data={activeUsersData}
-                                cx='50%'
-                                cy='50%'
-                                labelLine={false}
-                                outerRadius={80}
-                                fill='#8884d8'
-                                dataKey='value'
-                            >
-                                {activeUsersData.map((entry, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={COLORS[index % COLORS.length]}
-                                    />
-                                ))}
-                            </Pie>
-                            <ChartTooltip content={<ChartTooltipContent />} />
-                        </PieChart>
-                    </ResponsiveContainer>
+                    <PieChart>
+                        <Pie
+                            data={activeUsersData}
+                            cx='50%'
+                            cy='50%'
+                            labelLine={false}
+                            outerRadius={80}
+                            fill='#8884d8'
+                            dataKey='value'
+                        >
+                            {activeUsersData.map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                />
+                            ))}
+                        </Pie>
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                    </PieChart>
                 </ChartContainer>
             </CardContent>
         </Card>
 
         {/* Feedback and Reports Card (Takes Full Width) */}
-        <Card className='md:col-span-3'>
+        <Card className='md:col-span-1'>
             <CardHeader>
                 <CardTitle>Feedback and Reports</CardTitle>
                 <CardDescription>Number of tickets over time</CardDescription>
@@ -209,21 +200,19 @@ const AdminDashboard = () => (
                             color: 'hsl(var(--chart-5))',
                         },
                     }}
-                    className='h-[200px] w-full'
+                    className='h-[160px] w-full'
                 >
-                    <ResponsiveContainer width='100%' height='100%'>
-                        <LineChart data={feedbackReportsData}>
-                            <CartesianGrid strokeDasharray='3 3' />
-                            <XAxis dataKey='name' />
-                            <YAxis />
-                            <ChartTooltip content={<ChartTooltipContent />} />
-                            <Line
-                                type='monotone'
-                                dataKey='value'
-                                stroke='var(--color-value)'
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
+                    <LineChart data={feedbackReportsData}>
+                        <CartesianGrid strokeDasharray='3 3' />
+                        <XAxis dataKey='name' />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Line
+                            type='monotone'
+                            dataKey='value'
+                            stroke='var(--color-value)'
+                        />
+                    </LineChart>
                 </ChartContainer>
             </CardContent>
         </Card>

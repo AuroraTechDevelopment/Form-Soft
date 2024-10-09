@@ -9,18 +9,25 @@ import {
 import { Button } from '@/components/ui/button'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     return (
         <header className='z-40 flex h-16 w-full justify-between bg-white p-4 shadow-md'>
-            <div className='flex items-center'>
-                <Link href='/' className='text-2xl font-bold'>
-                    Survai
-                </Link>
-            </div>
-
+            <Link
+                href='/'
+                className='flex items-center justify-center space-x-2 text-xl font-bold'
+            >
+                <Image
+                    src='/images/logo-light.png'
+                    alt='Survai Logo'
+                    width={50}
+                    height={50}
+                />
+                <div>Survai</div>
+            </Link>
             <div className='md:hidden'>
                 <Button
                     variant='ghost'
@@ -35,7 +42,7 @@ export function Navbar() {
             </div>
 
             <nav
-                className={`absolute left-0 right-0 top-16 w-full flex-col bg-white p-4 md:static md:flex md:flex-row md:items-center md:justify-between md:space-x-4 md:p-0 ${isMenuOpen ? 'block' : 'hidden'} z-50`}
+                className={`absolute left-0 right-0 top-16 w-full flex-col bg-white p-4 md:static md:ml-4 md:flex md:flex-row md:items-center md:justify-between md:space-x-4 md:p-0 ${isMenuOpen ? 'block' : 'hidden'} z-50`}
             >
                 <NavigationMenu className='flex w-full flex-col md:mx-auto md:flex-row md:items-center'>
                     <NavigationMenuList className='flex w-full flex-col md:flex-row md:space-x-4'>

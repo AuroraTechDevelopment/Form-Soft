@@ -8,29 +8,18 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id             String       @id @default(uuid())
-  fullName       String
-  username       String       @unique
-  profilePicture String?
-  email          String       @unique
-  password       String
-  status         UserStatus   @default(UNVERIFIED)
-  role           UserRole     @default(USER)
-  preferences    Json?
-  createdAt      DateTime     @default(now())
-  lastLogin      DateTime     @default(now())
-  Account        Account[]
-  feedbacks      Feedback[]
-  forms          Form[]
-  reports        Report[]
-  Session        Session[]
-  submissions    Submission[]
+model feedbacks {
+  id        String   @id
+  userID    String?  @db.Uuid
+  category  String
+  comment   String
+  createdAt DateTime @default(now())
+  users     users?   @relation(fields: [userID], references: [id])
 }
 
-model Form {
-  id              String       @id @default(uuid())
-  userID          String
+model forms {
+  id              String        @id
+  userID          String        @db.Uuid
   title           String
   description     String
   questions       Json
@@ -39,88 +28,50 @@ model Form {
   status          FormStatus
   viewCount       Int
   submissionCount Int
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
   deadline        DateTime
-  user            User         @relation(fields: [userID], references: [id])
-  reports         Report[]
-  submissions     Submission[]
+  users           users         @relation(fields: [userID], references: [id])
+  reports         reports[]
+  submissions     submissions[]
 }
 
-model Submission {
-  id        String   @id @default(uuid())
-  formID    String
-  userID    String?
-  answers   Json
-  createdAt DateTime @default(now())
-  form      Form     @relation(fields: [formID], references: [id])
-  user      User?    @relation(fields: [userID], references: [id])
-}
-
-model Feedback {
-  id        String   @id @default(uuid())
-  userID    String
-  category  String
-  comment   String
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userID], references: [id])
-}
-
-model Report {
-  id       String   @id @default(uuid())
+model reports {
+  id       String   @id
   formID   String
-  userID   String?
+  userID   String?  @db.Uuid
   category String
   comment  String
   createAt DateTime @default(now())
-  form     Form     @relation(fields: [formID], references: [id])
-  user     User?    @relation(fields: [userID], references: [id])
+  forms    forms    @relation(fields: [formID], references: [id])
+  users    users?   @relation(fields: [userID], references: [id])
 }
 
-model Account {
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime
-  User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([provider, providerAccountId])
+model submissions {
+  id        String   @id
+  formID    String
+  userID    String?  @db.Uuid
+  answers   Json
+  createdAt DateTime @default(now())
+  forms     forms    @relation(fields: [formID], references: [id])
+  users     users?   @relation(fields: [userID], references: [id])
 }
 
-model Session {
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime
-  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@id([identifier, token])
-}
-
-enum UserStatus {
-  UNVERIFIED
-  OPEN
-  CLOSED
-  DEACTIVATED
-  ARCHIVED
-  DELETED
-  INCOMPLETE
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id          String        @id @db.Uuid
+  name        String
+  username    String        @unique
+  image       String?
+  status      Usertatus     @default(UNVERIFIED)
+  role        UserRole      @default(USER)
+  preferences Json?
+  createdAt   DateTime      @default(now())
+  lastLogin   DateTime      @default(now())
+  feedbacks   feedbacks[]
+  forms       forms[]
+  reports     reports[]
+  submissions submissions[]
 }
 
 enum UserRole {
@@ -134,4 +85,14 @@ enum FormStatus {
   ARCHIVED
   OPENED
   CLOSED
+}
+
+enum Usertatus {
+  UNVERIFIED
+  INCOMPLETE
+  OPEN
+  CLOSED
+  DEACTIVATED
+  ARCHIVED
+  DELETED
 }

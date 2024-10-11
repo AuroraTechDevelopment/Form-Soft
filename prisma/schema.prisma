@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,27 +8,18 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id             String       @id @default(uuid())
-  fullName       String
-  username       String       @unique
-  profilePicture String
-  email          String       @unique
-  password       String
-  status         UserStatus
-  role           UserRole
-  preferences    Json
-  forms          Form[]
-  submissions    Submission[]
-  feedbacks      Feedback[]
-  reports        Report[]
-  createdAt      DateTime
-  lastLogin      DateTime
+model feedbacks {
+  id        String   @id
+  userID    String?  @db.Uuid
+  category  String
+  comment   String
+  createdAt DateTime @default(now())
+  users     users?   @relation(fields: [userID], references: [id])
 }
 
-model Form {
-  id              String       @id @default(uuid())
-  userID          String
+model forms {
+  id              String        @id
+  userID          String        @db.Uuid
   title           String
   description     String
   questions       Json
@@ -43,53 +28,50 @@ model Form {
   status          FormStatus
   viewCount       Int
   submissionCount Int
-  submissions     Submission[]
-  reports         Report[]
-  user            User         @relation(fields: [userID], references: [id])
-  createdAt       DateTime
-  updatedAt       DateTime
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
   deadline        DateTime
+  users           users         @relation(fields: [userID], references: [id])
+  reports         reports[]
+  submissions     submissions[]
 }
 
-model Submission {
-  id        String   @id @default(uuid())
-  formID    String
-  userID    String?
-  answers   Json
-  form      Form     @relation(fields: [formID], references: [id])
-  user      User?    @relation(fields: [userID], references: [id])
-  createdAt DateTime
-}
-
-model Feedback {
-  id        String   @id @default(uuid())
-  userID    String
-  category  String
-  comment   String
-  user      User     @relation(fields: [userID], references: [id])
-  createdAt DateTime
-  // reviewer, status
-}
-
-model Report {
-  id       String   @id @default(uuid())
+model reports {
+  id       String   @id
   formID   String
-  userID   String?
+  userID   String?  @db.Uuid
   category String
   comment  String
-  form     Form     @relation(fields: [formID], references: [id])
-  user     User?    @relation(fields: [userID], references: [id])
-  createAt DateTime
-  // reviewer, status
+  createAt DateTime @default(now())
+  forms    forms    @relation(fields: [formID], references: [id])
+  users    users?   @relation(fields: [userID], references: [id])
 }
 
-enum UserStatus {
-  UNVERIFIED
-  OPEN
-  CLOSED
-  DEACTIVATED
-  ARCHIVED
-  DELETED
+model submissions {
+  id        String   @id
+  formID    String
+  userID    String?  @db.Uuid
+  answers   Json
+  createdAt DateTime @default(now())
+  forms     forms    @relation(fields: [formID], references: [id])
+  users     users?   @relation(fields: [userID], references: [id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id          String        @id @db.Uuid
+  name        String
+  username    String        @unique
+  image       String?
+  status      Usertatus     @default(UNVERIFIED)
+  role        UserRole      @default(USER)
+  preferences Json?
+  createdAt   DateTime      @default(now())
+  lastLogin   DateTime      @default(now())
+  feedbacks   feedbacks[]
+  forms       forms[]
+  reports     reports[]
+  submissions submissions[]
 }
 
 enum UserRole {
@@ -103,4 +85,14 @@ enum FormStatus {
   ARCHIVED
   OPENED
   CLOSED
+}
+
+enum Usertatus {
+  UNVERIFIED
+  INCOMPLETE
+  OPEN
+  CLOSED
+  DEACTIVATED
+  ARCHIVED
+  DELETED
 }

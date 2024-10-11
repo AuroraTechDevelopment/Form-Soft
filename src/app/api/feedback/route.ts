@@ -7,8 +7,9 @@ export async function POST(req: Request) {
         const { category, comment, userID } = await req.json()
 
         // Create feedback entry in the database using Prisma
-        const feedback = await prisma.feedback.create({
+        const feedback = await prisma.feedbacks.create({
             data: {
+                id: crypto.randomUUID(), // Generate a unique ID
                 category,
                 comment,
                 userID,

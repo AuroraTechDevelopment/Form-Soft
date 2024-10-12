@@ -5,7 +5,7 @@ export async function DELETE() {
     const userId = '9f78eb4d-d2b5-4365-822a-a11d2ecc28h1' // Temporarily hardcode the user ID
 
     try {
-        await prisma.user.delete({
+        await prisma.users.delete({
             where: { id: userId },
         })
         // Optionally log out the user or perform additional cleanup actions

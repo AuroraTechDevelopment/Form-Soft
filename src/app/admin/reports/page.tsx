@@ -1,6 +1,6 @@
 'use client'
 
-import { SetStateAction, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Pencil, Trash } from 'lucide-react'
 import {
     Card,
@@ -28,65 +28,84 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Report } from '@/types/types'
 
 const ReportsManagementContent = () => {
-    const [reports, setReports] = useState([
-        {
-            id: 'R001',
-            reportedBy: 'User123',
-            formId: 'F002',
-            reason: 'Inappropriate content',
-            status: 'Pending',
-        },
-        {
-            id: 'R002',
-            reportedBy: 'User456',
-            formId: 'F001',
-            reason: 'Spam',
-            status: 'Resolved',
-        },
-        {
-            id: 'R003',
-            reportedBy: 'User789',
-            formId: 'F003',
-            reason: 'Offensive language',
-            status: 'Under review',
-        },
-    ])
-
+    const [reports, setReports] = useState<Report[]>([])
     const [isOpen, setIsOpen] = useState(false)
-    const [currentReport, setCurrentReport] = useState({
+    const [currentReport, setCurrentReport] = useState<Report>({
         id: '',
-        reportedBy: '',
-        formId: '',
-        reason: '',
-        status: '',
+        formID: '',
+        userID: '',
+        category: '',
+        comment: '',
+        createAt: new Date(),
+        forms: { id: '' }, // Adjust to match your form data structure
+        users: { id: '' }, // Adjust to match your user data structure
     })
 
-    const handleEdit = (report: SetStateAction<{ id: string; reportedBy: string; formId: string; reason: string; status: string }>) => {
+    // Fetch reports from the API when the component mounts
+    useEffect(() => {
+        const fetchReports = async () => {
+            try {
+                const response = await fetch('/api/reports')
+                const data = await response.json()
+                setReports(data)
+            } catch (error) {
+                console.error('Error fetching reports:', error)
+            }
+        }
+
+        fetchReports()
+    }, [])
+
+    // Handle editing a report
+    const handleEdit = (report: Report) => {
         setCurrentReport(report)
         setIsOpen(true)
     }
 
-    const handleDelete = (id: string) => {
-        setReports(reports.filter((report) => report.id !== id))
+    // Handle deleting a report
+    const handleDelete = async (id: string) => {
+        try {
+            const response = await fetch('/api/reports', {
+                method: 'DELETE',
+                body: JSON.stringify({ id }),
+            })
+            if (response.ok) {
+                setReports(reports.filter((report) => report.id !== id))
+            } else {
+                console.error('Error deleting report:', response.statusText)
+            }
+        } catch (error) {
+            console.error('Error deleting report:', error)
+        }
     }
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    // Handle submitting the updated report
+    const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
-        setReports(
-            reports.map((report) =>
-                report.id === currentReport.id ? currentReport : report,
-            ),
-        )
-        setIsOpen(false)
+        try {
+            const response = await fetch(`/api/reports/${currentReport.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(currentReport),
+            })
+            if (response.ok) {
+                setReports(
+                    reports.map((report) =>
+                        report.id === currentReport.id ? currentReport : report,
+                    ),
+                )
+                setIsOpen(false)
+            } else {
+                console.error('Error updating report:', response.statusText)
+            }
+        } catch (error) {
+            console.error('Error updating report:', error)
+        }
     }
 
     return (
@@ -100,42 +119,53 @@ const ReportsManagementContent = () => {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Report ID</TableHead>
-                            <TableHead>Reported By</TableHead>
+                            <TableHead>Reported By (User ID)</TableHead>
                             <TableHead>Form ID</TableHead>
-                            <TableHead>Reason</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead>Category</TableHead>
+                            <TableHead>Comment</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {reports.map((report) => (
-                            <TableRow key={report.id}>
-                                <TableCell>{report.id}</TableCell>
-                                <TableCell>{report.reportedBy}</TableCell>
-                                <TableCell>{report.formId}</TableCell>
-                                <TableCell>{report.reason}</TableCell>
-                                <TableCell>{report.status}</TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() => handleEdit(report)}
-                                    >
-                                        <Pencil className='h-4 w-4' />
-                                    </Button>
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() => handleDelete(report.id)}
-                                    >
-                                        <Trash className='h-4 w-4' />
-                                    </Button>
+                        {reports.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className='text-center'>
+                                    No reports available
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : (
+                            reports.map((report) => (
+                                <TableRow key={report.id}>
+                                    <TableCell>{report.id}</TableCell>
+                                    <TableCell>{report.userID}</TableCell>
+                                    <TableCell>{report.formID}</TableCell>
+                                    <TableCell>{report.category}</TableCell>
+                                    <TableCell>{report.comment}</TableCell>
+                                    <TableCell>
+                                        <Button
+                                            variant='ghost'
+                                            size='sm'
+                                            onClick={() => handleEdit(report)}
+                                        >
+                                            <Pencil className='h-4 w-4' />
+                                        </Button>
+                                        <Button
+                                            variant='ghost'
+                                            size='sm'
+                                            onClick={() =>
+                                                handleDelete(report.id)
+                                            }
+                                        >
+                                            <Trash className='h-4 w-4' />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
+
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -147,87 +177,71 @@ const ReportsManagementContent = () => {
                     <form onSubmit={handleSubmit}>
                         <div className='grid gap-4 py-4'>
                             <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label
-                                    htmlFor='reportedBy'
-                                    className='text-right'
-                                >
-                                    Reported By
+                                <Label htmlFor='userID' className='text-right'>
+                                    Reported By (User ID)
                                 </Label>
                                 <Input
-                                    id='reportedBy'
-                                    value={currentReport.reportedBy}
+                                    id='userID'
+                                    value={currentReport.userID || ''}
                                     onChange={(e) =>
                                         setCurrentReport({
                                             ...currentReport,
-                                            reportedBy: e.target.value,
+                                            userID: e.target.value,
                                         })
                                     }
                                     className='col-span-3'
                                 />
                             </div>
                             <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor='formId' className='text-right'>
+                                <Label htmlFor='formID' className='text-right'>
                                     Form ID
                                 </Label>
                                 <Input
-                                    id='formId'
-                                    value={currentReport.formId}
+                                    id='formID'
+                                    value={currentReport.formID}
                                     onChange={(e) =>
                                         setCurrentReport({
                                             ...currentReport,
-                                            formId: e.target.value,
+                                            formID: e.target.value,
                                         })
                                     }
                                     className='col-span-3'
                                 />
                             </div>
                             <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor='reason' className='text-right'>
-                                    Reason
+                                <Label
+                                    htmlFor='category'
+                                    className='text-right'
+                                >
+                                    Category
                                 </Label>
                                 <Input
-                                    id='reason'
-                                    value={currentReport.reason}
+                                    id='category'
+                                    value={currentReport.category}
                                     onChange={(e) =>
                                         setCurrentReport({
                                             ...currentReport,
-                                            reason: e.target.value,
+                                            category: e.target.value,
                                         })
                                     }
                                     className='col-span-3'
                                 />
                             </div>
                             <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor='status' className='text-right'>
-                                    Status
+                                <Label htmlFor='comment' className='text-right'>
+                                    Comment
                                 </Label>
-                                <Select
-                                    onValueChange={(value) =>
+                                <Input
+                                    id='comment'
+                                    value={currentReport.comment}
+                                    onChange={(e) =>
                                         setCurrentReport({
                                             ...currentReport,
-                                            status: value,
+                                            comment: e.target.value,
                                         })
                                     }
-                                    defaultValue={currentReport.status}
-                                >
-                                    <SelectTrigger className='col-span-3'>
-                                        <SelectValue placeholder='Select a status' />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value='Pending'>
-                                            Pending
-                                        </SelectItem>
-                                        <SelectItem value='Under review'>
-                                            Under review
-                                        </SelectItem>
-                                        <SelectItem value='Resolved'>
-                                            Resolved
-                                        </SelectItem>
-                                        <SelectItem value='Dismissed'>
-                                            Dismissed
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                    className='col-span-3'
+                                />
                             </div>
                         </div>
                         <DialogFooter>

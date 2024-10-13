@@ -41,5 +41,28 @@ export interface User {
     preferences?: object
     createdAt: Date
     lastLogin: Date
+    forms?: Form[]
     feedbacks?: Feedback[]
+}
+
+export enum FormStatus {
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE',
+    ARCHIVED = 'ARCHIVED',
+}
+
+export interface Form {
+    id: string
+    userID: string
+    title: string
+    description: string
+    questions: unknown
+    manySubmission: boolean
+    editable: boolean
+    status: FormStatus
+    viewCount: number
+    submissionCount: number
+    createdAt: Date
+    updatedAt: Date
+    deadline: Date
 }

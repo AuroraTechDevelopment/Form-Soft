@@ -1,6 +1,6 @@
 'use client'
 
-import { SetStateAction, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash } from 'lucide-react'
 import {
     Card,
@@ -29,79 +29,79 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-const ModeratorManagementContent = () => {
-    const [moderators, setModerators] = useState([
-        {
-            id: 'M001',
-            name: 'Alice Williams',
-            email: 'alice@example.com',
-            assignedForms: 5,
-            lastActivity: '2023-06-15 11:20 AM',
-        },
-        {
-            id: 'M002',
-            name: 'Charlie Brown',
-            email: 'charlie@example.com',
-            assignedForms: 3,
-            lastActivity: '2023-06-14 3:30 PM',
-        },
-        {
-            id: 'M003',
-            name: 'Diana Ross',
-            email: 'diana@example.com',
-            assignedForms: 7,
-            lastActivity: '2023-06-13 10:45 AM',
-        },
-    ])
+interface User {
+    id: string
+    name: string
+    username: string
+}
 
+const ModeratorManagementContent = () => {
+    const [moderators, setModerators] = useState<User[]>([])
     const [isOpen, setIsOpen] = useState(false)
-    const [currentModerator, setCurrentModerator] = useState({
+    const [currentModerator, setCurrentModerator] = useState<User>({
         id: '',
         name: '',
-        email: '',
-        assignedForms: 0,
+        username: '',
     })
     const [isEditing, setIsEditing] = useState(false)
 
+    useEffect(() => {
+        const fetchModerators = async () => {
+            const response = await fetch('/api/moderators')
+            const data = await response.json()
+            setModerators(data)
+        }
+
+        fetchModerators()
+    }, [])
+
     const handleCreate = () => {
         setIsEditing(false)
-        setCurrentModerator({ id: '', name: '', email: '', assignedForms: 0 })
+        setCurrentModerator({
+            id: '',
+            name: '',
+            username: '',
+        })
         setIsOpen(true)
     }
 
-    const handleEdit = (moderator: SetStateAction<{ id: string; name: string; email: string; assignedForms: number }>) => {
+    const handleEdit = (moderator: User) => {
         setIsEditing(true)
         setCurrentModerator(moderator)
         setIsOpen(true)
     }
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
+        await fetch('/api/moderators', {
+            method: 'DELETE',
+            body: JSON.stringify({ id }),
+        })
         setModerators(moderators.filter((moderator) => moderator.id !== id))
     }
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        if (isEditing) {
-            setModerators(
-                moderators.map((moderator) =>
-                    moderator.id === currentModerator.id
-                        ? {
-                              ...currentModerator,
-                              lastActivity: new Date().toLocaleString(),
-                          }
-                        : moderator,
-                ),
-            )
-        } else {
-            setModerators([
-                ...moderators,
-                {
-                    ...currentModerator,
-                    id: `M${moderators.length + 1}`.padStart(4, '0'),
-                    lastActivity: new Date().toLocaleString(),
-                },
-            ])
-        }
+
+        const method = isEditing ? 'PUT' : 'POST'
+        const response = await fetch('/api/moderators', {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(currentModerator),
+        })
+        const updatedModerator = await response.json()
+
+        setModerators((prev) =>
+            isEditing
+                ? prev.map((moderator) =>
+                      moderator.id === updatedModerator.id
+                          ? updatedModerator
+                          : moderator,
+                  )
+                : [...prev, updatedModerator],
+        )
+
         setIsOpen(false)
     }
 
@@ -115,47 +115,47 @@ const ModeratorManagementContent = () => {
                 <Button onClick={handleCreate} className='mb-4'>
                     <Plus className='mr-2 h-4 w-4' /> Create New Moderator
                 </Button>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Moderator ID</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Assigned Forms</TableHead>
-                            <TableHead>Last Activity</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {moderators.map((moderator) => (
-                            <TableRow key={moderator.id}>
-                                <TableCell>{moderator.id}</TableCell>
-                                <TableCell>{moderator.name}</TableCell>
-                                <TableCell>{moderator.email}</TableCell>
-                                <TableCell>{moderator.assignedForms}</TableCell>
-                                <TableCell>{moderator.lastActivity}</TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() => handleEdit(moderator)}
-                                    >
-                                        <Pencil className='h-4 w-4' />
-                                    </Button>
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() =>
-                                            handleDelete(moderator.id)
-                                        }
-                                    >
-                                        <Trash className='h-4 w-4' />
-                                    </Button>
-                                </TableCell>
+                {moderators.length === 0 ? (
+                    <p>No moderators available.</p>
+                ) : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Username</TableHead>
+                                <TableHead>Actions</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {moderators.map((moderator) => (
+                                <TableRow key={moderator.id}>
+                                    <TableCell>{moderator.name}</TableCell>
+                                    <TableCell>{moderator.username}</TableCell>
+                                    <TableCell>
+                                        <Button
+                                            variant='ghost'
+                                            size='sm'
+                                            onClick={() =>
+                                                handleEdit(moderator)
+                                            }
+                                        >
+                                            <Pencil className='h-4 w-4' />
+                                        </Button>
+                                        <Button
+                                            variant='ghost'
+                                            size='sm'
+                                            onClick={() =>
+                                                handleDelete(moderator.id)
+                                            }
+                                        >
+                                            <Trash className='h-4 w-4' />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
             </CardContent>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent>
@@ -190,39 +190,19 @@ const ModeratorManagementContent = () => {
                                 />
                             </div>
                             <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor='email' className='text-right'>
-                                    Email
-                                </Label>
-                                <Input
-                                    id='email'
-                                    type='email'
-                                    value={currentModerator.email}
-                                    onChange={(e) =>
-                                        setCurrentModerator({
-                                            ...currentModerator,
-                                            email: e.target.value,
-                                        })
-                                    }
-                                    className='col-span-3'
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
                                 <Label
-                                    htmlFor='assignedForms'
+                                    htmlFor='username'
                                     className='text-right'
                                 >
-                                    Assigned Forms
+                                    Username
                                 </Label>
                                 <Input
-                                    id='assignedForms'
-                                    type='number'
-                                    value={currentModerator.assignedForms}
+                                    id='username'
+                                    value={currentModerator.username}
                                     onChange={(e) =>
                                         setCurrentModerator({
                                             ...currentModerator,
-                                            assignedForms: parseInt(
-                                                e.target.value,
-                                            ),
+                                            username: e.target.value,
                                         })
                                     }
                                     className='col-span-3'

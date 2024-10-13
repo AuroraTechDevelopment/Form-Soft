@@ -25,10 +25,17 @@ export type Report = {
 export enum UserStatus {
     VERIFIED = 'VERIFIED',
     UNVERIFIED = 'UNVERIFIED',
+    INCOMPLETE = 'INCOMPLETE',
+    OPEN = 'OPEN',
+    CLOSED = 'CLOSED',
+    DEACTIVATED = 'DEACTIVATED',
+    ARCHIVED = 'ARCHIVED',
+    DELETED = 'DELETED',
 }
 
 export enum UserRole {
     ADMIN = 'ADMIN',
+    MODERATOR = 'MODERATOR',
     USER = 'USER',
 }
 export interface User {

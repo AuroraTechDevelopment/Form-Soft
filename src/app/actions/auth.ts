@@ -129,6 +129,8 @@ export async function loginOAuth(provider: string) {
 }
 
 export async function signup(data: SignUpSchema) {
+    let redirectPath: string | null = null
+
     try {
         // validate the form
         const validCredentials = signUpSchema.safeParse(data)
@@ -168,13 +170,7 @@ export async function signup(data: SignUpSchema) {
                     },
                 }
             else if (updated_at.getTime() - created_at.getTime() >= 1000) {
-                return {
-                    success: false,
-                    error: {
-                        message:
-                            'User already registered. Please confirm your email. We have sent another you an email to confirm your email address.',
-                    },
-                }
+                redirectPath = '/'
             }
         } else if (error) {
             console.log(error)
@@ -186,16 +182,25 @@ export async function signup(data: SignUpSchema) {
                 },
             }
         }
-
-        revalidatePath('/', 'layout')
-        redirect('/')
     } catch (error) {
         return {
             success: false,
             error: {
-                message: 'An error occurred while signing up' + error,
+                message:
+                    'An error occurred while signing up: ' +
+                    (error as Error).message,
             },
         }
+    } finally {
+        if (redirectPath) {
+            revalidatePath('/', 'layout')
+            redirect(redirectPath)
+        }
+    }
+
+    return {
+        success: true,
+        redirectPath: '/',
     }
 }
 

@@ -32,28 +32,43 @@ const SignUpForm = () => {
     async function onSubmit(data: SignUpSchema) {
         // validate the form
         const validCredentials = signUpSchema.safeParse(data)
-
+        console.log(validCredentials)
         if (!validCredentials.success) {
             toast({
                 title: 'Error',
-                description: 'Registeration Failed: ' + validCredentials.error,
+                description: 'Registration Failed: ' + validCredentials.error,
                 variant: 'destructive',
             })
             return
         }
 
-        const res = await signup(validCredentials.data)
-        if (!res?.success) {
+        try {
+            const res = await signup(validCredentials.data)
+            if (!res.success) {
+                toast({
+                    title: 'Error',
+                    description:
+                        'Registration Failed: ' +
+                        (res.error?.message || 'An unknown error occurred'),
+                    variant: 'destructive',
+                })
+            } else {
+                toast({
+                    title: 'Success',
+                    description:
+                        'Registration Successful \n We have sent you a verification email',
+                })
+                form.reset()
+            }
+        } catch (error) {
             toast({
                 title: 'Error',
                 description:
-                    'Registeration Failed: ' + res?.error?.message || '',
+                    'Registration Failed: ' +
+                    (error instanceof Error
+                        ? error.message
+                        : 'An unknown error occurred'),
                 variant: 'destructive',
-            })
-        } else {
-            toast({
-                title: 'Success',
-                description: 'Registeration Successful',
             })
         }
     }

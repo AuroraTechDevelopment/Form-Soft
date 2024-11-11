@@ -40,48 +40,9 @@ export default async function Home() {
                     <MainBody />
                 </div>
                 <Footer />
-            </div>
-        <div>
-            {user ? (
-                <>
-                    {/* <h1>Welcome {user.name}</h1> */}
-                    <p>Your email is {user.email}</p>
-                    <form>
-                        <Button
-                            variant='ghost'
-                            className='text-red-500'
-                            formAction={signOut}
-                            // onClick={async () => {
-                            //     await signOut()
-                            // }}
-                        >
-                            <LogOut /> <span>Log out</span>
-                        </Button>
-                    </form>
-                </>
-            ) : (
-                <>
-                    <p>You are not logged in</p>
-                    <LoginSignUp />
-                </>
-            )}
+            </div>           
         </div>
     )
 }
 
-const LoginSignUp = () => {
-    return (
-        <div className='inline-flex space-x-2'>
-            <div>
-                <Link href='/signin' legacyBehavior passHref>
-                    <Button variant='outline'>Log in</Button>
-                </Link>
-            </div>
-            <div>
-                <Link href='/signup' legacyBehavior passHref>
-                    <Button variant='default'>Sign up</Button>
-                </Link>
-            </div>
-        </div>
-    )
-}
+

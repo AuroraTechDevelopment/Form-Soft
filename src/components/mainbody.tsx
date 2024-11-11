@@ -3,6 +3,9 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { FcGoogle } from 'react-icons/fc'
+import { toast } from '@/hooks/use-toast'
+import { loginOAuth } from '@/app/actions/auth'
+import Link from 'next/link'
 // import { FaMicrosoft } from 'react-icons/fa'
 
 export function MainBody() {
@@ -38,7 +41,9 @@ export function MainBody() {
                     whileHover='hover'
                     whileTap='tap'
                 >
-                    <Button className='w-full'>Sign up with Email</Button>
+                    <Link href='/signin' legacyBehavior passHref>
+                        <Button className='w-full'>Sign up with Email</Button>
+                    </Link>
                 </motion.div>
                 <div className='flex items-center'>
                     <hr className='flex-grow border-t border-gray-300' />
@@ -55,10 +60,21 @@ export function MainBody() {
                         className='w-full'
                     >
                         <Button
-                            variant='outline'
-                            className='flex w-full items-center'
+                            variant={'outline'}
+                            className='flex w-full items-center justify-center gap-2'
+                            onClick={async () => {
+                                const res = await loginOAuth('google')
+                                if (res && !res?.success)
+                                    toast({
+                                        title: 'Error',
+                                        description:
+                                            'Login Failed\n' + res?.error,
+                                        variant: 'destructive',
+                                    })
+                            }}
                         >
-                            <FcGoogle className='mr-2 h-6 w-6' /> Sign up
+                            <FcGoogle className='mr-2 h-6 w-6' />
+                            Continue with Google
                         </Button>
                     </motion.div>
                     {/* <motion.div

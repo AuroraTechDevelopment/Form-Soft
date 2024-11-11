@@ -82,10 +82,14 @@ export function Navbar() {
                 </NavigationMenu>
 
                 <div className='mt-4 flex flex-col justify-end space-y-4 md:ml-auto md:mt-0 md:flex-row md:space-x-4 md:space-y-0'>
-                    <Button variant='outline' className='w-full md:w-auto'>
-                        Log In
-                    </Button>
-                    <Button className='w-full md:w-auto'>Sign Up</Button>
+                    <Link href='/signin' legacyBehavior passHref>
+                        <Button variant='outline' className='w-full md:w-auto'>
+                            Log In
+                        </Button>
+                    </Link>
+                    <Link href='/signup' legacyBehavior passHref>
+                        <Button className='w-full md:w-auto'>Sign Up</Button>
+                    </Link>
                 </div>
             </nav>
         </header>

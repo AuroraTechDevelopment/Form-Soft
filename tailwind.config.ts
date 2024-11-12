@@ -26,12 +26,15 @@ const config: Config = {
                 nav: '4rem',
                 'screen-no-nav': 'calc(100vh - 4rem)',
             },
-            maxHeight: {
-                'screen-no-nav': 'calc(100vh - 4rem)',
-            },
             minHeight: {
+                nav: '4rem',
                 'screen-no-nav': 'calc(100vh - 4rem)',
             },
+            maxHeight: {
+                nav: '4rem',
+                'screen-no-nav': 'calc(100vh - 4rem)',
+            },
+
             colors: {
                 background: 'hsl(var(--background))',
                 foreground: 'hsl(var(--foreground))',

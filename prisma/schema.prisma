@@ -9,27 +9,27 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid()) @db.Uuid
-  email       String       @unique
+  id          String        @id @default(uuid()) @db.Uuid
+  email       String        @unique
   password    String
-  username    String       @unique
+  username    String        @unique
   image       String?
-  status      UserStatus   @default(UNVERIFIED)
-  role        UserRole     @default(USER)
+  status      UserStatus    @default(UNVERIFIED)
+  role        UserRole      @default(USER)
   preferences Json?
-  createdAt   DateTime     @default(now())
-  lastLogin   DateTime     @updatedAt
-  feedbacks   Feedback[]
-  forms       Form[]
-  reports     Report[]
-  submissions Submission[]
+  createdAt   DateTime      @default(now())
+  lastLogin   DateTime      @updatedAt
+  feedbacks   feedbacks[]
+  forms       forms[]
+  reports     reports[]
+  submissions submissions[]
 
   @@map("users")
 }
 
-model Form {
-  id              String       @id @default(uuid())
-  userID          String       @db.Uuid
+model forms {
+  id              String        @id
+  userID          String        @db.Uuid
   title           String
   description     String
   questions       Json
@@ -38,56 +38,46 @@ model Form {
   status          FormStatus
   viewCount       Int
   submissionCount Int
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
   deadline        DateTime
-  user            User         @relation(fields: [userID], references: [id])
-  reports         Report[]
-  submissions     Submission[]
-
-  @@map("forms")
+  users           User          @relation(fields: [userID], references: [id])
+  reports         reports[]
+  submissions     submissions[]
 }
 
-model Submission {
-  id        String   @id @default(uuid())
-  formID    String
-  userID    String?  @db.Uuid
-  answers   Json
-  createdAt DateTime @default(now())
-  form      Form     @relation(fields: [formID], references: [id])
-  user      User?    @relation(fields: [userID], references: [id])
-
-  @@map("submissions")
-}
-
-model Feedback {
-  id        String   @id @default(uuid())
-  userID    String?  @db.Uuid
-  category  String
-  comment   String
-  createdAt DateTime @default(now())
-  user      User?    @relation(fields: [userID], references: [id])
-
-  @@map("feedbacks")
-}
-
-model Report {
-  id       String   @id @default(uuid())
+model reports {
+  id       String   @id
   formID   String
   userID   String?  @db.Uuid
   category String
   comment  String
   createAt DateTime @default(now())
-  form     Form     @relation(fields: [formID], references: [id])
-  user     User?    @relation(fields: [userID], references: [id])
+  forms    forms    @relation(fields: [formID], references: [id])
+  users    User?    @relation(fields: [userID], references: [id])
+}
 
-  @@map("reports")
+model submissions {
+  id        String   @id
+  formID    String
+  userID    String?  @db.Uuid
+  answers   Json
+  createdAt DateTime @default(now())
+  forms     forms    @relation(fields: [formID], references: [id])
+  users     User?    @relation(fields: [userID], references: [id])
+}
+
+model feedbacks {
+  id        String   @id
+  userID    String?  @db.Uuid
+  category  String
+  comment   String
+  createdAt DateTime @default(now())
+  users     User?    @relation(fields: [userID], references: [id])
 }
 
 enum UserStatus {
-  VERIFIED
   UNVERIFIED
-  INCOMPLETE
   OPEN
   CLOSED
   DEACTIVATED

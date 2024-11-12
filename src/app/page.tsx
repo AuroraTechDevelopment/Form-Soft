@@ -40,9 +40,36 @@ export default async function Home() {
                     <MainBody />
                 </div>
                 <Footer />
-            </div>           
+            </div>
+           
         </div>
     )
 }
 
 
+
+
+
+// {user ? (
+//     <>
+//         {/* <h1>Welcome {user.name}</h1> */}
+//         <p>Your email is {user.email}</p>
+//         <form>
+//             <Button
+//                 variant='ghost'
+//                 className='text-red-500'
+//                 formAction={signOut}
+//                 // onClick={async () => {
+//                 //     await signOut()
+//                 // }}
+//             >
+//                 <LogOut /> <span>Log out</span>
+//             </Button>
+//         </form>
+//     </>
+// ) : (
+//     <>
+//         <p>You are not logged in</p>
+//         <LoginSignUp />
+//     </>
+// )}

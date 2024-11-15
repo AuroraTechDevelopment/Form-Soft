@@ -19,8 +19,10 @@ import {
 import { toast } from '@/hooks/use-toast'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { useUser } from '@/context/UserContext'
 
 const Page = () => {
+    const { user } = useUser()
     const [feedback, setFeedback] = useState({ category: '', comment: '' })
 
     const handleFeedbackSubmit = async (e: React.FormEvent) => {
@@ -36,7 +38,7 @@ const Page = () => {
                 body: JSON.stringify({
                     category: feedback.category,
                     comment: feedback.comment,
-                    userID: '8770753b-6310-483c-ba99-90a9e1278225', // Temporarily hardcode the user ID
+                    userID: user.id,
                 }),
             })
 

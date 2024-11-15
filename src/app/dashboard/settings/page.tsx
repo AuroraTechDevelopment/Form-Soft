@@ -21,15 +21,11 @@ import {
     DialogOverlay,
     DialogTitle,
 } from '@/components/ui/dialog'
+import { useUser } from '@/context/UserContext'
+import { signOut } from '@/app/actions/auth'
 
 const Page = () => {
-    const [user, setUser] = useState({
-        fullName: 'John Doe',
-        username: 'johndoe',
-        email: 'john@example.com',
-        profilePicture: '/placeholder.svg?height=100&width=100',
-    })
-
+    const { user } = useUser()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
     const handleUserUpdate = (e: React.FormEvent) => {
@@ -46,7 +42,9 @@ const Page = () => {
             // Call the API to delete the account
             const response = await fetch('/api/delete-account', {
                 method: 'DELETE',
+                body: JSON.stringify({ userId: user.id }),
             })
+            signOut()
             if (response.ok) {
                 toast({
                     title: 'Account Deleted',
@@ -82,39 +80,28 @@ const Page = () => {
                     <div className='flex items-center space-x-4'>
                         <Avatar className='h-20 w-20'>
                             <AvatarImage
-                                src={user.profilePicture}
-                                alt={user.fullName}
+                                src={user?.user_metadata.avatar_url}
+                                alt={user.user_metadata.email}
                             />
                             <AvatarFallback>
-                                {user.fullName.charAt(0)}
+                                <div className='text-xs'>
+                                    {user?.user_metadata.email.split('@')[0]}
+                                </div>
                             </AvatarFallback>
                         </Avatar>
                         <Button variant='outline'>Change Picture</Button>
                     </div>
                     <div className='space-y-2'>
-                        <Label htmlFor='fullName'>Full Name</Label>
-                        <Input
-                            id='fullName'
-                            value={user.fullName}
-                            onChange={(e) =>
-                                setUser({
-                                    ...user,
-                                    fullName: e.target.value,
-                                })
-                            }
-                        />
-                    </div>
-                    <div className='space-y-2'>
                         <Label htmlFor='username'>Username</Label>
                         <Input
                             id='username'
-                            value={user.username}
-                            onChange={(e) =>
-                                setUser({
-                                    ...user,
-                                    username: e.target.value,
-                                })
-                            }
+                            value={user?.user_metadata.full_name}
+                            // onChange={(e) =>
+                            //     setUser({
+                            //         ...user,
+                            //         username: e.target.value,
+                            //     })
+                            // }
                         />
                     </div>
                     <div className='space-y-2'>
@@ -122,13 +109,13 @@ const Page = () => {
                         <Input
                             id='email'
                             type='email'
-                            value={user.email}
-                            onChange={(e) =>
-                                setUser({
-                                    ...user,
-                                    email: e.target.value,
-                                })
-                            }
+                            value={user?.user_metadata.email}
+                            // onChange={(e) =>
+                            //     setUser({
+                            //         ...user,
+                            //         email: e.target.value,
+                            //     })
+                            // }
                         />
                     </div>
                     <div className='space-y-2'>

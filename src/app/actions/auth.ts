@@ -88,20 +88,20 @@ export async function login(data: SignInSchema) {
         }
     }
 
-    revalidatePath('/', 'layout')
-    redirect('/')
+    revalidatePath('/dashboard/forms', 'layout')
+    redirect('/dashboard/forms')
 }
 
 export async function loginOAuth(provider: string) {
-    // const { success } = await getCurrentUser()
-    // if (success) {
-    //     return {
-    //         success: false,
-    //         error: {
-    //             message: 'You are already logged in',
-    //         },
-    //     }
-    // }
+    const { success } = await getCurrentUser()
+    if (success) {
+        return {
+            success: false,
+            error: {
+                message: 'You are already logged in',
+            },
+        }
+    }
 
     const supabase = createClient()
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -121,11 +121,13 @@ export async function loginOAuth(provider: string) {
         }
     }
 
-    revalidatePath('/', 'layout')
+    revalidatePath('/dashboard/forms', 'layout')
     if (data.url) {
+        console.log('redirecting to', data.url)
         redirect(data.url) // use the redirect API for your server framework
     }
-    redirect('/')
+
+    redirect('/dashboard/forms')
 }
 
 export async function signup(data: SignUpSchema) {
@@ -170,7 +172,7 @@ export async function signup(data: SignUpSchema) {
                     },
                 }
             else if (updated_at.getTime() - created_at.getTime() >= 1000) {
-                redirectPath = '/'
+                redirectPath = '/dashboard/forms'
             }
         } else if (error) {
             console.log(error)
@@ -193,14 +195,14 @@ export async function signup(data: SignUpSchema) {
         }
     } finally {
         if (redirectPath) {
-            revalidatePath('/', 'layout')
+            revalidatePath('/dashboard/forms', 'layout')
             redirect(redirectPath)
         }
     }
 
     return {
         success: true,
-        redirectPath: '/',
+        redirectPath: '/dashboard/forms',
     }
 }
 

@@ -18,13 +18,15 @@ export async function GET(request: Request) {
             if (isLocalEnv) {
                 console.log('isLocalEnv:', isLocalEnv)
                 // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                return NextResponse.redirect(`${origin}${next}`)
+                return NextResponse.redirect(`${origin}/dashboard/forms`)
             } else if (forwardedHost) {
                 console.log('forwardedHost:', forwardedHost)
-                return NextResponse.redirect(`https://${forwardedHost}${next}`)
+                return NextResponse.redirect(
+                    `https://${forwardedHost}/dashboard/forms`,
+                )
             } else {
                 console.log('origin:', origin)
-                return NextResponse.redirect(`${origin}${next}`)
+                return NextResponse.redirect(`${origin}$/dashboard/forms`)
             }
         }
     }

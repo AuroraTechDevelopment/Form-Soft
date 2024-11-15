@@ -102,15 +102,6 @@ const SideBar = ({ type }: { type: 'admin' | 'user' }) => {
         <div className='flex h-full flex-col pl-6 md:w-[20%]'>
             {/* Desktop Navigation */}
             <div className='sticky top-6 hidden h-min min-w-48 md:block'>
-                <Link
-                    href={type === 'admin' ? '/admin/dashboard' : '/dashboard'}
-                >
-                    <h1 className='mb-6 text-2xl font-bold'>
-                        {type === 'admin'
-                            ? 'Admin Dashboard'
-                            : 'User Dashboard'}
-                    </h1>
-                </Link>
                 <NavigationMenu
                     orientation='vertical'
                     className='w-full items-start justify-start'

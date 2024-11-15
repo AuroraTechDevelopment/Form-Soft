@@ -2,29 +2,8 @@ import { Navbar } from '@/components/navbar'
 import { MainBody } from '@/components/mainbody'
 import { Footer } from '@/components/footer'
 import { WavyBackground } from '@/components/ui/wavy-background'
-import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase/server'
-import { LogOut } from 'lucide-react'
-// import { signOut, useSession } from 'next-auth/react'
-import Link from 'next/link'
-import { signOut } from './actions/auth'
 
 export default async function Home() {
-    // const { data: session } = useSession()
-
-    const supabase = createClient()
-
-    const {
-        data: { user },
-        error,
-    } = await supabase.auth.getUser()
-    // const { data: session, error } = await supabase.auth.getSession()
-    if (error || !user) {
-        console.log('error:', error)
-        console.log('user:', user)
-        // redirect('/signin')
-    }
-
     return (
         <div className='relative flex h-screen w-full flex-col bg-gray-50'>
             {/* WavyBackground will act as the absolute background */}
@@ -41,35 +20,6 @@ export default async function Home() {
                 </div>
                 <Footer />
             </div>
-           
         </div>
     )
 }
-
-
-
-
-
-// {user ? (
-//     <>
-//         {/* <h1>Welcome {user.name}</h1> */}
-//         <p>Your email is {user.email}</p>
-//         <form>
-//             <Button
-//                 variant='ghost'
-//                 className='text-red-500'
-//                 formAction={signOut}
-//                 // onClick={async () => {
-//                 //     await signOut()
-//                 // }}
-//             >
-//                 <LogOut /> <span>Log out</span>
-//             </Button>
-//         </form>
-//     </>
-// ) : (
-//     <>
-//         <p>You are not logged in</p>
-//         <LoginSignUp />
-//     </>
-// )}

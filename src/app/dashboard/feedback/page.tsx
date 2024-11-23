@@ -22,7 +22,16 @@ import { Button } from '@/components/ui/button'
 import { useUser } from '@/context/UserContext'
 
 const Page = () => {
-    const { user } = useUser()
+    const { user } = useUser() as {
+        user: {
+            id: string
+            user_metadata: {
+                avatar_url: string
+                email: string
+                full_name: string
+            }
+        }
+    }
     const [feedback, setFeedback] = useState({ category: '', comment: '' })
 
     const handleFeedbackSubmit = async (e: React.FormEvent) => {

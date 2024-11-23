@@ -25,7 +25,16 @@ import { useUser } from '@/context/UserContext'
 import { signOut } from '@/app/actions/auth'
 
 const Page = () => {
-    const { user } = useUser()
+    const { user } = useUser() as {
+        user: {
+            id: string
+            user_metadata: {
+                avatar_url: string
+                email: string
+                full_name: string
+            }
+        }
+    }
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
     const handleUserUpdate = (e: React.FormEvent) => {

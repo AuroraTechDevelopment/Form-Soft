@@ -16,7 +16,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 export default function UserNavbar() {
-    const { user } = useUser()
+    const { user } = useUser() as {
+        user: {
+            id: string
+            user_metadata: {
+                avatar_url: string
+                email: string
+                full_name: string
+            }
+        }
+    }
     console.log('user:', user)
 
     return (

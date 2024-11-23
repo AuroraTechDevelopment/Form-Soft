@@ -2,13 +2,13 @@
 import { createContext, useContext } from 'react'
 
 interface UserContextType {
-    user: any | null
+    user: unknown;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const UserProvider: React.FC<{
-    user: any
+    user: unknown
     children: React.ReactNode
 }> = ({ user, children }) => {
     return (

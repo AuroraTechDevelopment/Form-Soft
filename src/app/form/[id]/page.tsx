@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from '@/hooks/use-toast'
 import { useUser } from '@/context/UserContext'
+import SignIn from '@/app/(auth)/signin/page'
 
 type QuestionType =
     | 'fullText'
@@ -58,7 +59,7 @@ function PublicFormClient({ params }: { params: { id: string } }) {
 
     useEffect(() => {
         const fetchForm = async () => {
-            console.log(params.id)
+            // console.log(params.id)
             try {
                 const response = await fetch(`/api/forms/${params.id}`)
                 if (!response.ok) throw new Error('Failed to fetch form')
@@ -294,9 +295,19 @@ function PublicFormClient({ params }: { params: { id: string } }) {
                 return null
         }
     }
+    // If user is not logged in, show login prompt
+    if (!user) {
+        localStorage.setItem('redirectTo', `${window.location.origin}/form/${params.id}`)
+        return (
+            <div className='container mx-auto py-6'>
+                <SignIn />
+            </div>
+        )
+    }
 
     if (!form) return <p>Loading form...</p>
     if (hasSubmitted) {
+        localStorage.removeItem('redirectTo')
         return (
             <div className='container mx-auto py-6'>
                 <Card className='mx-auto w-full max-w-4xl text-center'>

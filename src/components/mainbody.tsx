@@ -68,7 +68,8 @@ export function MainBody() {
                                     toast({
                                         title: 'Error',
                                         description:
-                                            'Login Failed\n' + res?.error,
+                                            'Login Failed \n' +
+                                            'You are already Logged in',
                                         variant: 'destructive',
                                     })
                             }}

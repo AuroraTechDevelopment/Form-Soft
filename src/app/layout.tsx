@@ -3,6 +3,8 @@ import localFont from 'next/font/local'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import Providers from '@/components/providers/providers'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',
@@ -20,17 +22,27 @@ export const metadata: Metadata = {
     description: 'Survai is an Ai survey platform',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode
 }>) {
+    const supabase = createClient()
+    const {
+        data: { user },
+        error,
+    } = await supabase.auth.getUser()
+
+    if (error || !user) {
+        redirect('/')
+    }
+
     return (
         <html lang='en'>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <Providers>
+                <Providers user={user}>
                     {children}
                     <Toaster />
                 </Providers>

@@ -1,4 +1,7 @@
+'use client'
+
 import { ThemeProvider } from './theme-provider'
+import { UserProvider } from '@/context/UserContext'
 
 /**
  * Providers wrapper for all of our context providers.
@@ -9,14 +12,14 @@ import { ThemeProvider } from './theme-provider'
 
 export default function Providers({
     children,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    user, // Pass the `user` prop if needed
 }: Readonly<{
     children: React.ReactNode
+    user: unknown // Adjust the type if the `user` has a specific structure
 }>) {
     return (
         <ThemeProvider>
-            {/* Nest Providers here... */}
-            {children}
+            <UserProvider user={user}>{children}</UserProvider>
         </ThemeProvider>
     )
 }

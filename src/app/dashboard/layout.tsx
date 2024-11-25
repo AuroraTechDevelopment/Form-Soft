@@ -20,16 +20,16 @@ export default async function Layout({
     }
 
     return (
-        <UserProvider user={user}>
-            <div className='min-h-screen flex-col'>
-                <UserNavbar />
-                <div className='flex min-h-screen py-6'>
-                    <SideBar type='user' />
-                    <main className='mx-auto mb-12 w-full pr-6 md:mb-0 md:w-[70%]'>
-                        {children}
-                    </main>
-                </div>
+        // <UserProvider user={user}>
+        <div className='min-h-screen flex-col'>
+            <UserNavbar />
+            <div className='flex min-h-screen py-6'>
+                <SideBar type='user' />
+                <main className='mx-auto mb-12 w-full pr-6 md:mb-0 md:w-[70%]'>
+                    {children}
+                </main>
             </div>
-        </UserProvider>
+        </div>
+    // </UserProvider>
     )
 }

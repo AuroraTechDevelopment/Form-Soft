@@ -78,6 +78,8 @@ function FormBuilderClient({ params }: { params: { id: string } }) {
                     setManySubmission(form.manySubmission || false)
                     setEditable(form.editable || false)
                     setStatus(form.status)
+                    // Set public link
+                    setPublicLink(`${window.location.origin}/form/${params.id}`)
                     // setMaxSubmissions(form.maxSubmissions || undefined)
                     // setTags(form.tags || [])
                     // setCategory(form.category || '')

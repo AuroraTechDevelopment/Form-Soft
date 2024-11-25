@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@/context/UserContext'
+import { toast } from '@/hooks/use-toast'
 
 const Page = () => {
     const { user } = useUser() as {
@@ -49,6 +50,25 @@ const Page = () => {
             fetchForms()
         }
     }, [user?.id])
+    if (localStorage.getItem('redirectTo')) {
+        toast({
+            title: 'Continue Filling Form',
+            description: 'Click here to continue your form.',
+            onClick: () => {
+                const redirectTo = localStorage.getItem('redirectTo')
+                if (redirectTo) {
+                    window.location.href = redirectTo
+                }
+                localStorage.removeItem('redirectTo') // Remove after clicking
+            },
+            onOpenChange: (isOpen) => {
+                if (!isOpen) {
+                    // Remove redirectTo from local storage if the toast is dismissed
+                    localStorage.removeItem('redirectTo')
+                }
+            },
+        })
+    }
 
     const handleCreateForm = async () => {
         try {

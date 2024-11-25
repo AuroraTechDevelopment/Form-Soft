@@ -20,10 +20,12 @@ const SignInOauth = () => {
                         if (res && !res?.success)
                             toast({
                                 title: 'Error',
-                                description: 'Login Failed\n' + res?.error,
+                                description:
+                                    'Login Failed\n' +
+                                    'You are already Logged in',
                                 variant: 'destructive',
                             })
-                        }}
+                    }}
                 >
                     <Image
                         src={googleIcon}

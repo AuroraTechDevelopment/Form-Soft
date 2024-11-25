@@ -6,47 +6,89 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { toast } from '@/hooks/use-toast'
 import { Pencil, Plus, Trash } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@/context/UserContext'
 
 const Page = () => {
-    const [forms, setForms] = useState([
-        { id: 1, title: 'Customer Survey', createdAt: '2023-05-01' },
-        { id: 2, title: 'Employee Feedback', createdAt: '2023-05-15' },
-    ])
-
-    const handleCreateForm = () => {
-        // Placeholder for form creation logic
-        const newForm = {
-            id: forms.length + 1,
-            title: 'New Form',
-            createdAt: new Date().toISOString().split('T')[0],
+    const { user } = useUser() as {
+        user: {
+            id: string
+            user_metadata: {
+                avatar_url: string
+                email: string
+                full_name: string
+            }
         }
-        setForms([...forms, newForm])
-        toast({
-            title: 'Form Created',
-            description: 'A new form has been created.',
-        })
     }
 
-    const handleUpdateForm = (id: number) => {
-        // Placeholder for form update logic
-        toast({
-            title: 'Form Updated',
-            description: `Form ${id} has been updated.`,
-        })
+    const router = useRouter()
+    const [forms, setForms] = useState<
+        { id: string; title: string; createdAt: string }[]
+    >([])
+
+    useEffect(() => {
+        // Fetch the user's forms on mount
+        const fetchForms = async () => {
+            try {
+                const response = await fetch(`/api/forms?userID=${user?.id}`)
+                if (response.ok) {
+                    const formsData = await response.json()
+                    setForms(formsData)
+                } else {
+                    console.error('Failed to fetch forms')
+                }
+            } catch (error) {
+                console.error('Error fetching forms:', error)
+            }
+        }
+
+        if (user?.id) {
+            fetchForms()
+        }
+    }, [user?.id])
+
+    const handleCreateForm = async () => {
+        try {
+            const response = await fetch('/api/forms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userID: user?.id }), // Send user ID for form ownership
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to create draft form')
+            }
+
+            const form = await response.json() // Backend returns the draft form with its ID
+            router.push(`/dashboard/forms/form-builder/${form.id}`)
+        } catch (error) {
+            console.error('Error creating draft form:', error)
+        }
     }
 
-    const handleDeleteForm = (id: number) => {
-        // Placeholder for form deletion logic
-        setForms(forms.filter((form) => form.id !== id))
-        toast({
-            title: 'Form Deleted',
-            description: `Form ${id} has been deleted.`,
-            variant: 'destructive',
-        })
+    const handleUpdateForm = (id: string) => {
+        // Redirect to form builder to edit the form
+        router.push(`/dashboard/forms/form-builder/${id}`)
+    }
+
+    const handleDeleteForm = async (id: string) => {
+        try {
+            const response = await fetch(`/api/forms/${id}`, {
+                method: 'DELETE',
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to delete form')
+            }
+
+            // Remove the deleted form from the state
+            setForms(forms.filter((form) => form.id !== id))
+        } catch (error) {
+            console.error('Error deleting form:', error)
+        }
     }
 
     return (
@@ -69,7 +111,10 @@ const Page = () => {
                             <div>
                                 <h3 className='font-semibold'>{form.title}</h3>
                                 <p className='text-sm text-gray-500'>
-                                    Created on: {form.createdAt}
+                                    Created on:{' '}
+                                    {new Date(
+                                        form.createdAt,
+                                    ).toLocaleDateString()}
                                 </p>
                             </div>
                             <div className='flex flex-col items-center justify-center space-y-2 md:flex-row md:justify-end md:space-y-0'>

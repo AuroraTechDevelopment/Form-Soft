@@ -1,21 +1,36 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl
+
+    // Define public routes that do not require authentication
+    const publicPaths = ['/', '/login', '/signup', '/about', '/contact']
     const protectedPaths = ['/admin', '/account']
-    return await updateSession(request, { protectedPaths })
+
+    // Allow access to public routes
+    if (publicPaths.some((path) => pathname.startsWith(path))) {
+        return NextResponse.next()
+    }
+
+    // Enforce session updates for protected paths
+    if (protectedPaths.some((path) => pathname.startsWith(path))) {
+        return await updateSession(request, { protectedPaths })
+    }
+
+    // Default response for unhandled paths
+    return NextResponse.next()
 }
 
 // Routes Middleware should not run on
-// Aka. Don't apply this middleware to the following paths
 export const config = {
     matcher: [
         /*
-         * Match all request paths except for the ones starting with:
+         * Exclude paths like:
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * Feel free to modify this pattern to include more paths.
+         * - Static assets (e.g., images)
          */
         '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],

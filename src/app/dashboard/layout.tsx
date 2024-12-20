@@ -2,7 +2,6 @@ import SideBar from '@/components/dashboard/side-bar'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import UserNavbar from '@/components/dashboard/user-navbar'
-import { UserProvider } from '@/context/UserContext'
 
 export default async function Layout({
     children,

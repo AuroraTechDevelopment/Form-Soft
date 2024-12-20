@@ -53,7 +53,9 @@ function PublicFormClient({ params }: { params: { id: string } }) {
         }
     }
     const [form, setForm] = useState<Form | null>(null)
-    const [answers, setAnswers] = useState<any[]>([])
+    const [answers, setAnswers] = useState<
+        (string | number | boolean | string[] | null)[]
+    >([])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [hasSubmitted, setHasSubmitted] = useState(false)
 
@@ -91,7 +93,10 @@ function PublicFormClient({ params }: { params: { id: string } }) {
         fetchForm()
     }, [params.id])
 
-    const handleAnswerChange = (index: number, value: any) => {
+    const handleAnswerChange = (
+        index: number,
+        value: string | number | boolean | string[] | null,
+    ) => {
         const updatedAnswers = [...answers]
         updatedAnswers[index] = value
         setAnswers(updatedAnswers)
@@ -105,9 +110,12 @@ function PublicFormClient({ params }: { params: { id: string } }) {
         const updatedAnswers = [...answers]
         if (!updatedAnswers[index]) updatedAnswers[index] = []
         if (checked) {
-            updatedAnswers[index] = [...updatedAnswers[index], option]
+            updatedAnswers[index] = [
+                ...(updatedAnswers[index] as string[]),
+                option,
+            ]
         } else {
-            updatedAnswers[index] = updatedAnswers[index].filter(
+            updatedAnswers[index] = (updatedAnswers[index] as string[]).filter(
                 (opt: string) => opt !== option,
             )
         }
@@ -177,7 +185,11 @@ function PublicFormClient({ params }: { params: { id: string } }) {
                 return (
                     <Input
                         placeholder='Enter your response'
-                        value={answers[index] || ''}
+                        value={
+                            typeof answers[index] === 'boolean'
+                                ? String(answers[index])
+                                : answers[index] || ''
+                        }
                         onChange={(e) =>
                             handleAnswerChange(index, e.target.value)
                         }
@@ -186,7 +198,7 @@ function PublicFormClient({ params }: { params: { id: string } }) {
             case 'mcqSingle':
                 return (
                     <RadioGroup
-                        value={answers[index] || ''}
+                        value={String(answers[index] || '')}
                         onValueChange={(value) =>
                             handleAnswerChange(index, value)
                         }
@@ -220,7 +232,8 @@ function PublicFormClient({ params }: { params: { id: string } }) {
                             >
                                 <Checkbox
                                     checked={
-                                        answers[index]?.includes(option) ||
+                                        (Array.isArray(answers[index]) &&
+                                            answers[index]?.includes(option)) ||
                                         false
                                     }
                                     onCheckedChange={(checked) =>
@@ -246,7 +259,11 @@ function PublicFormClient({ params }: { params: { id: string } }) {
                     <Input
                         type='number'
                         placeholder='Enter a number'
-                        value={answers[index] || ''}
+                        value={
+                            typeof answers[index] === 'boolean'
+                                ? String(answers[index])
+                                : answers[index] || ''
+                        }
                         onChange={(e) =>
                             handleAnswerChange(
                                 index,
@@ -260,7 +277,11 @@ function PublicFormClient({ params }: { params: { id: string } }) {
             case 'boolean':
                 return (
                     <RadioGroup
-                        value={answers[index] || ''}
+                        value={
+                            typeof answers[index] === 'string'
+                                ? answers[index]
+                                : ''
+                        }
                         onValueChange={(value) =>
                             handleAnswerChange(index, value)
                         }
@@ -285,7 +306,11 @@ function PublicFormClient({ params }: { params: { id: string } }) {
                 return (
                     <Input
                         type='datetime-local'
-                        value={answers[index] || ''}
+                        value={
+                            typeof answers[index] === 'boolean'
+                                ? String(answers[index])
+                                : answers[index] || ''
+                        }
                         onChange={(e) =>
                             handleAnswerChange(index, e.target.value)
                         }
@@ -297,7 +322,10 @@ function PublicFormClient({ params }: { params: { id: string } }) {
     }
     // If user is not logged in, show login prompt
     if (!user) {
-        localStorage.setItem('redirectTo', `${window.location.origin}/form/${params.id}`)
+        localStorage.setItem(
+            'redirectTo',
+            `${window.location.origin}/form/${params.id}`,
+        )
         return (
             <div className='container mx-auto py-6'>
                 <SignIn />

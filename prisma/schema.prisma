@@ -98,3 +98,13 @@ enum FormStatus {
   OPENED
   CLOSED
 }
+
+enum Usertatus {
+  UNVERIFIED
+  INCOMPLETE
+  OPEN
+  CLOSED
+  DEACTIVATED
+  ARCHIVED
+  DELETED
+}

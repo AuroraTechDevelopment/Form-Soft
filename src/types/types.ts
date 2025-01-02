@@ -40,8 +40,8 @@ export enum UserRole {
 }
 export interface User {
     id: string // UUID
-    name: string
     username: string
+    email: string
     image?: string
     status: UserStatus // Enum for status
     role: UserRole // Enum for role

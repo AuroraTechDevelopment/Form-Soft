@@ -34,7 +34,7 @@ const Page = () => {
         // Fetch the user's forms on mount
         const fetchForms = async () => {
             try {
-                const response = await fetch(`/api/forms?userID=${user?.id}`)
+                const response = await fetch(`/api/forms?userId=${user?.id}`)
                 if (response.ok) {
                     const formsData = await response.json()
                     setForms(formsData)

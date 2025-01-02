@@ -1,11 +1,26 @@
 import { NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import prisma from '@/server/prisma'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        // Get the userId from the URL search params
+        const { searchParams } = new URL(request.url)
+        const userId = searchParams.get('userId')
+
+        // If userId is provided, fetch forms for that user
+        // If not, fetch all forms (admin functionality)
         const forms = await prisma.forms.findMany({
-            orderBy: { createdAt: 'desc' },
+            where: userId
+                ? {
+                      userID: userId, // Assuming your form model has a userId field
+                  }
+                : undefined,
+            orderBy: {
+                createdAt: 'desc',
+            },
         })
+
         return NextResponse.json(forms)
     } catch (error) {
         console.error('[FORMS_GET]', error)
@@ -81,7 +96,7 @@ export async function POST(request: Request) {
                 userID,
                 title: 'Untitled Form',
                 description: 'Write a description for your form',
-                questions:[],
+                questions: [],
                 manySubmission: false,
                 editable: false,
                 viewCount: 0,

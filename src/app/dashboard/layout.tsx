@@ -18,8 +18,13 @@ export default async function Layout({
         redirect('/')
     }
 
+    // Check if user is an admin (has @survai email)
+    // If they are, redirect them away from user routes
+    if (user.email?.includes('@survai')) {
+        redirect('/admin/dashboard')
+    }
+
     return (
-        // <UserProvider user={user}>
         <div className='min-h-screen flex-col'>
             <UserNavbar />
             <div className='flex min-h-screen py-6'>
@@ -29,6 +34,5 @@ export default async function Layout({
                 </main>
             </div>
         </div>
-    // </UserProvider>
     )
 }

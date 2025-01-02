@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-
 import { Button } from '@/components/ui/button'
 import {
     Form,
@@ -18,8 +17,10 @@ import { toast } from '@/hooks/use-toast'
 import { signInSchema, SignInSchema } from '@/zod-schemas/auth'
 import { Loader2 } from 'lucide-react'
 import { login } from '@/app/actions/auth'
+import { useRouter } from 'next/navigation'
 
 const SignInForm = () => {
+    const router = useRouter()
     const form = useForm<SignInSchema>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
@@ -53,6 +54,13 @@ const SignInForm = () => {
                 title: 'Success',
                 description: 'Login Successful',
             })
+
+            // Check if email contains @survai
+            if (data.email.includes('@survai')) {
+                router.push('/admin/dashboard')
+            } else {
+                router.push('/dashboard/forms')
+            }
         }
     }
 

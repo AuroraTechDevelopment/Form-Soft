@@ -1,7 +1,10 @@
 'use client'
 
-import { SetStateAction, useState } from 'react'
-import { Plus, Pencil, Trash } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@/context/UserContext'
+import { toast } from '@/hooks/use-toast'
+import { Pencil, Plus } from 'lucide-react'
 import {
     Card,
     CardContent,
@@ -9,6 +12,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import {
     Table,
     TableBody,
@@ -17,238 +21,224 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
 
-const FormManagementContent = () => {
-    const [forms, setForms] = useState([
-        {
-            id: 'F001',
-            title: 'Customer Feedback',
-            createdBy: 'John Doe',
-            submissions: 150,
-            lastUpdated: '2023-06-15',
-        },
-        {
-            id: 'F002',
-            title: 'Employee Survey',
-            createdBy: 'Jane Smith',
-            submissions: 75,
-            lastUpdated: '2023-06-14',
-        },
-        {
-            id: 'F003',
-            title: 'Product Registration',
-            createdBy: 'Bob Johnson',
-            submissions: 300,
-            lastUpdated: '2023-06-13',
-        },
-    ])
+interface Form {
+    id: string
+    title: string
+    description: string
+    status: 'DRAFT' | 'OPENED' | 'CLOSED'
+    submissionCount: number
+    createdAt: string
+    deadline: string
+}
 
-    const [isOpen, setIsOpen] = useState(false)
-    const [currentForm, setCurrentForm] = useState({
-        id: '',
-        title: '',
-        createdBy: '',
-        submissions: 0,
-    })
-    const [isEditing, setIsEditing] = useState(false)
-
-    const handleCreate = () => {
-        setIsEditing(false)
-        setCurrentForm({ id: '', title: '', createdBy: '', submissions: 0 })
-        setIsOpen(true)
-    }
-
-    const handleEdit = (
-        form: SetStateAction<{
+const Page = () => {
+    const { user } = useUser() as {
+        user: {
             id: string
-            title: string
-            createdBy: string
-            submissions: number
-        }>,
-    ) => {
-        setIsEditing(true)
-        setCurrentForm(form)
-        setIsOpen(true)
-    }
-
-    const handleDelete = (id: string) => {
-        setForms(forms.filter((form) => form.id !== id))
-    }
-
-    const handleSubmit = (e: { preventDefault: () => void }) => {
-        e.preventDefault()
-        if (isEditing) {
-            setForms(
-                forms.map((form) =>
-                    form.id === currentForm.id
-                        ? {
-                              ...currentForm,
-                              lastUpdated: new Date()
-                                  .toISOString()
-                                  .split('T')[0],
-                          }
-                        : form,
-                ),
-            )
-        } else {
-            setForms([
-                ...forms,
-                {
-                    ...currentForm,
-                    id: `F${forms.length + 1}`.padStart(4, '0'),
-                    submissions: 0,
-                    lastUpdated: new Date().toISOString().split('T')[0],
-                },
-            ])
+            user_metadata: {
+                avatar_url: string
+                email: string
+                full_name: string
+            }
         }
-        setIsOpen(false)
+    }
+
+    const router = useRouter()
+    const [forms, setForms] = useState<Form[]>([])
+
+    useEffect(() => {
+        const fetchForms = async () => {
+            try {
+                const response = await fetch(`/api/forms?userID=${user?.id}`)
+                if (!response.ok) {
+                    throw new Error('Failed to fetch forms')
+                }
+                const formsData = await response.json()
+                setForms(formsData)
+            } catch (error) {
+                console.error('Error fetching forms:', error)
+                toast({
+                    title: 'Error',
+                    description: 'Unable to fetch forms.',
+                })
+            }
+        }
+
+        if (user?.id) {
+            fetchForms()
+        }
+    }, [user?.id])
+
+    useEffect(() => {
+        const redirectTo = localStorage.getItem('redirectTo')
+        if (redirectTo) {
+            toast({
+                title: 'Continue Filling Form',
+                description: 'Click here to continue your form.',
+                onClick: () => {
+                    window.location.href = redirectTo
+                    localStorage.removeItem('redirectTo')
+                },
+                onOpenChange: (isOpen) => {
+                    if (!isOpen) localStorage.removeItem('redirectTo')
+                },
+            })
+        }
+    }, [])
+
+    const handleCreateForm = async () => {
+        try {
+            const response = await fetch('/api/forms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userID: user?.id }),
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to create draft form')
+            }
+
+            const form = await response.json()
+            router.push(`/admin/forms/form-builder/${form.id}`)
+        } catch (error) {
+            console.error('Error creating draft form:', error)
+            toast({
+                title: 'Error',
+                description: 'Unable to create a new form.',
+            })
+        }
+    }
+
+    const handleUpdateForm = (id: string) => {
+        router.push(`/admin/forms/form-builder/${id}`)
+    }
+
+    const handleDeleteForm = async (id: string) => {
+        try {
+            const response = await fetch(`/api/forms/${id}`, {
+                method: 'DELETE',
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to delete form')
+            }
+
+            setForms(forms.filter((form) => form.id !== id))
+        } catch (error) {
+            console.error('Error deleting form:', error)
+            toast({
+                title: 'Error',
+                description: 'Unable to delete the form.',
+            })
+        }
+    }
+
+    const getStatusBadge = (status: Form['status']) => {
+        switch (status) {
+            case 'DRAFT':
+                return <Badge variant='secondary'>Draft</Badge>
+            case 'OPENED':
+                return <Badge variant='default'>Published</Badge>
+            case 'CLOSED':
+                return <Badge variant='destructive'>Closed</Badge>
+            default:
+                return null
+        }
     }
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Form Management</CardTitle>
-                <CardDescription>Overview of all forms</CardDescription>
+                <CardTitle>Forms</CardTitle>
+                <CardDescription>Manage your forms</CardDescription>
             </CardHeader>
             <CardContent>
-                <Button onClick={handleCreate} className='mb-4'>
-                    <Plus className='mr-2 h-4 w-4' /> Create New Form
+                <Button onClick={handleCreateForm} className='mb-4'>
+                    <Plus className='mr-2 h-4 w-4' />
+                    <span>Create New Form</span>
                 </Button>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Form ID</TableHead>
                             <TableHead>Title</TableHead>
-                            <TableHead>Created By</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>Submissions</TableHead>
-                            <TableHead>Last Updated</TableHead>
+                            <TableHead>Created At</TableHead>
+                            <TableHead>Deadline</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {forms.map((form) => (
                             <TableRow key={form.id}>
-                                <TableCell>{form.id}</TableCell>
                                 <TableCell>{form.title}</TableCell>
-                                <TableCell>{form.createdBy}</TableCell>
-                                <TableCell>{form.submissions}</TableCell>
-                                <TableCell>{form.lastUpdated}</TableCell>
                                 <TableCell>
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() => handleEdit(form)}
-                                    >
-                                        <Pencil className='h-4 w-4' />
-                                    </Button>
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() => handleDelete(form.id)}
-                                    >
-                                        <Trash className='h-4 w-4' />
-                                    </Button>
+                                    {getStatusBadge(form.status)}
+                                </TableCell>
+                                <TableCell>{form.submissionCount}</TableCell>
+                                <TableCell>
+                                    {new Date(
+                                        form.createdAt,
+                                    ).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell>
+                                    {new Date(
+                                        form.deadline,
+                                    ).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant='ghost'
+                                                className='h-8 w-8 p-0'
+                                            >
+                                                <span className='sr-only'>
+                                                    Open menu
+                                                </span>
+                                                <Pencil className='h-4 w-4' />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align='end'>
+                                            <DropdownMenuLabel>
+                                                Actions
+                                            </DropdownMenuLabel>
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    handleUpdateForm(form.id)
+                                                }
+                                            >
+                                                Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    handleDeleteForm(form.id)
+                                                }
+                                                className='text-red-600'
+                                            >
+                                                Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </CardContent>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            {isEditing ? 'Edit Form' : 'Create New Form'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {isEditing
-                                ? 'Edit the form details below'
-                                : 'Enter the details for the new form'}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit}>
-                        <div className='grid gap-4 py-4'>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor='title' className='text-right'>
-                                    Title
-                                </Label>
-                                <Input
-                                    id='title'
-                                    value={currentForm.title}
-                                    onChange={(e) =>
-                                        setCurrentForm({
-                                            ...currentForm,
-                                            title: e.target.value,
-                                        })
-                                    }
-                                    className='col-span-3'
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label
-                                    htmlFor='createdBy'
-                                    className='text-right'
-                                >
-                                    Created By
-                                </Label>
-                                <Input
-                                    id='createdBy'
-                                    value={currentForm.createdBy}
-                                    onChange={(e) =>
-                                        setCurrentForm({
-                                            ...currentForm,
-                                            createdBy: e.target.value,
-                                        })
-                                    }
-                                    className='col-span-3'
-                                />
-                            </div>
-                            {isEditing && (
-                                <div className='grid grid-cols-4 items-center gap-4'>
-                                    <Label
-                                        htmlFor='submissions'
-                                        className='text-right'
-                                    >
-                                        Submissions
-                                    </Label>
-                                    <Input
-                                        id='submissions'
-                                        type='number'
-                                        value={currentForm.submissions}
-                                        onChange={(e) =>
-                                            setCurrentForm({
-                                                ...currentForm,
-                                                submissions: parseInt(
-                                                    e.target.value,
-                                                ),
-                                            })
-                                        }
-                                        className='col-span-3'
-                                    />
-                                </div>
-                            )}
-                        </div>
-                        <DialogFooter>
-                            <Button type='submit'>
-                                {isEditing ? 'Save Changes' : 'Create Form'}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
         </Card>
     )
 }
 
-export default FormManagementContent
+export default Page

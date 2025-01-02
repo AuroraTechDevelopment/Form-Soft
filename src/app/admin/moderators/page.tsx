@@ -31,8 +31,9 @@ import { Label } from '@/components/ui/label'
 
 interface User {
     id: string
-    name: string
     username: string
+    email: string
+    password: string
 }
 
 const ModeratorManagementContent = () => {
@@ -40,8 +41,9 @@ const ModeratorManagementContent = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [currentModerator, setCurrentModerator] = useState<User>({
         id: '',
-        name: '',
         username: '',
+        email: '',
+        password: '',
     })
     const [isEditing, setIsEditing] = useState(false)
 
@@ -59,8 +61,9 @@ const ModeratorManagementContent = () => {
         setIsEditing(false)
         setCurrentModerator({
             id: '',
-            name: '',
             username: '',
+            email: '',
+            password: '',
         })
         setIsOpen(true)
     }
@@ -121,7 +124,7 @@ const ModeratorManagementContent = () => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
+                                <TableHead>email</TableHead>
                                 <TableHead>Username</TableHead>
                                 <TableHead>Actions</TableHead>
                             </TableRow>
@@ -129,7 +132,7 @@ const ModeratorManagementContent = () => {
                         <TableBody>
                             {moderators.map((moderator) => (
                                 <TableRow key={moderator.id}>
-                                    <TableCell>{moderator.name}</TableCell>
+                                    <TableCell>{moderator.email}</TableCell>
                                     <TableCell>{moderator.username}</TableCell>
                                     <TableCell>
                                         <Button
@@ -174,22 +177,6 @@ const ModeratorManagementContent = () => {
                     <form onSubmit={handleSubmit}>
                         <div className='grid gap-4 py-4'>
                             <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor='name' className='text-right'>
-                                    Name
-                                </Label>
-                                <Input
-                                    id='name'
-                                    value={currentModerator.name}
-                                    onChange={(e) =>
-                                        setCurrentModerator({
-                                            ...currentModerator,
-                                            name: e.target.value,
-                                        })
-                                    }
-                                    className='col-span-3'
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
                                 <Label
                                     htmlFor='username'
                                     className='text-right'
@@ -203,6 +190,41 @@ const ModeratorManagementContent = () => {
                                         setCurrentModerator({
                                             ...currentModerator,
                                             username: e.target.value,
+                                        })
+                                    }
+                                    className='col-span-3'
+                                />
+                            </div>
+                            <div className='grid grid-cols-4 items-center gap-4'>
+                                <Label htmlFor='email' className='text-right'>
+                                    Email
+                                </Label>
+                                <Input
+                                    id='name'
+                                    value={currentModerator.email}
+                                    onChange={(e) =>
+                                        setCurrentModerator({
+                                            ...currentModerator,
+                                            email: e.target.value,
+                                        })
+                                    }
+                                    className='col-span-3'
+                                />
+                            </div>
+                            <div className='grid grid-cols-4 items-center gap-4'>
+                                <Label
+                                    htmlFor='password'
+                                    className='text-right'
+                                >
+                                    Password
+                                </Label>
+                                <Input
+                                    id='password'
+                                    value={currentModerator.password}
+                                    onChange={(e) =>
+                                        setCurrentModerator({
+                                            ...currentModerator,
+                                            password: e.target.value,
                                         })
                                     }
                                     className='col-span-3'

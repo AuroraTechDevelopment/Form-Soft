@@ -3,7 +3,7 @@ import prisma from '@/server/prisma'
 
 export async function GET() {
     try {
-        const moderators = await prisma.users.findMany({
+        const moderators = await prisma.user.findMany({
             where: { role: 'MODERATOR' },
             include: {
                 forms: true,
@@ -20,14 +20,15 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-    const { name, username } = await req.json()
+    const { username, email , password } = await req.json()
 
     try {
-        const newModerator = await prisma.users.create({
+        const newModerator = await prisma.user.create({
             data: {
-                id:crypto.randomUUID(),
-                name,
+                id: crypto.randomUUID(),
                 username,
+                email,
+                password,
                 role: 'MODERATOR',
             },
         })
@@ -42,14 +43,14 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-    const { id, name, username } = await req.json()
+    const { id, username, email } = await req.json()
 
     try {
-        const updatedModerator = await prisma.users.update({
+        const updatedModerator = await prisma.user.update({
             where: { id },
             data: {
-                name,
-                username,         
+                username,
+                email,
             },
         })
         return NextResponse.json(updatedModerator)
@@ -66,7 +67,7 @@ export async function DELETE(req: Request) {
     const { id } = await req.json()
 
     try {
-        await prisma.users.delete({ where: { id } })
+        await prisma.user.delete({ where: { id } })
         return NextResponse.json({ message: 'moderator deleted successfully' })
     } catch (error) {
         console.error(error)

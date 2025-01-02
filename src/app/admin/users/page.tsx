@@ -36,8 +36,8 @@ const UserManagementContent = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [currentUser, setCurrentUser] = useState<User>({
         id: '',
-        name: '',
         username: '',
+        email: '',
         role: UserRole.USER,
         status: UserStatus.VERIFIED,
         createdAt: new Date(),
@@ -68,8 +68,8 @@ const UserManagementContent = () => {
         setIsEditing(false)
         setCurrentUser({
             id: '',
-            name: '',
             username: '',
+            email: '',
             role: UserRole.USER,
             status: UserStatus.VERIFIED,
             createdAt: new Date(),
@@ -139,8 +139,8 @@ const UserManagementContent = () => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
                             <TableHead>Username</TableHead>
+                            <TableHead>Email</TableHead>
                             <TableHead>Role</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -155,8 +155,8 @@ const UserManagementContent = () => {
                         ) : (
                             users.map((user) => (
                                 <TableRow key={user.id}>
-                                    <TableCell>{user.name}</TableCell>
                                     <TableCell>{user.username}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
                                     <TableCell>{user.role}</TableCell>
                                     <TableCell>
                                         <Button
@@ -197,16 +197,16 @@ const UserManagementContent = () => {
                     <form onSubmit={handleSubmit}>
                         <div className='grid gap-4 py-4'>
                             <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor='name' className='text-right'>
-                                    Name
+                                <Label htmlFor='email' className='text-right'>
+                                    Email
                                 </Label>
                                 <Input
-                                    id='name'
-                                    value={currentUser.name}
+                                    id='email'
+                                    value={currentUser.email}
                                     onChange={(e) =>
                                         setCurrentUser({
                                             ...currentUser,
-                                            name: e.target.value,
+                                            email: e.target.value,
                                         })
                                     }
                                     className='col-span-3'

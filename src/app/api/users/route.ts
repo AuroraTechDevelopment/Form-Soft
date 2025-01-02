@@ -3,7 +3,7 @@ import prisma from '@/server/prisma'
 
 export async function GET() {
     try {
-        const users = await prisma.users.findMany({
+        const users = await prisma.user.findMany({
             where: { role: 'USER' },
             include: {
                 forms: true,
@@ -19,38 +19,38 @@ export async function GET() {
     }
 }
 
-export async function POST(req: Request) {
-    const { name, username, role } = await req.json()
+// export async function POST(req: Request) {
+//     const { username, email, role } = await req.json()
 
-    try {
-        const newUser = await prisma.users.create({
-            data: {
-                id: crypto.randomUUID(),
-                name,
-                username,
-                role,
-            },
-        })
-        return NextResponse.json(newUser)
-    } catch (error) {
-        console.error(error)
-        return NextResponse.json(
-            { error: 'Error creating user' },
-            { status: 500 },
-        )
-    }
-}
+//     try {
+//         const newUser = await prisma.user.create({
+//             data: {
+//                 id: crypto.randomUUID(),
+//                 username,
+//                 email,
+//                 role,
+//             },
+//         })
+//         return NextResponse.json(newUser)
+//     } catch (error) {
+//         console.error(error)
+//         return NextResponse.json(
+//             { error: 'Error creating user' },
+//             { status: 500 },
+//         )
+//     }
+// }
 
 export async function PUT(req: Request) {
-    const { id, name, username, role } = await req.json()
+    const { id, username, email, role } = await req.json()
 
     try {
-        const updatedUser = await prisma.users.update({
+        const updatedUser = await prisma.user.update({
             where: { id },
             data: {
-                name,
                 username,
-                role
+                email,
+                role,
             },
         })
         return NextResponse.json(updatedUser)
@@ -67,7 +67,7 @@ export async function DELETE(req: Request) {
     const { id } = await req.json()
 
     try {
-        await prisma.users.delete({ where: { id } })
+        await prisma.user.delete({ where: { id } })
         return NextResponse.json({ message: 'user deleted successfully' })
     } catch (error) {
         console.error(error)
